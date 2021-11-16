@@ -50,12 +50,47 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       
       <v-toolbar-title v-text="title" />
+
+      <v-spacer></v-spacer>
+
+      <v-menu offset-y>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          depressed
+          text
+          rounded
+          v-bind="attrs"
+          v-on="on"
+        >
+          <v-icon>
+          mdi-account
+        </v-icon>
+        <span class="ml-1">User#431</span>
+        </v-btn>
+      </template>
+      <v-list>
+
+        <v-list-item>
+          <v-list-item-title>Profile</v-list-item-title>
+        </v-list-item>
+
+        <v-list-item to="/">
+          <v-list-item-title>Logout</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+
     </v-app-bar>
+
+
     <v-main>
       <v-container>
         <Nuxt />
       </v-container>
     </v-main>
+
+
+
     <v-footer
       app
     >
@@ -75,20 +110,28 @@ export default {
                 action: 'mdi-chart-bar',
                 items: [
                     { 
-                    title: 'Overview',
-                    link: '/access/statistic/overview'
+                      title: 'Overview',
+                      link: '/access/statistic/overview'
                     },
                     { 
-                    title: 'Records',
-                    link: '/access/statistic/records'
+                      title: 'Resident',
+                      link: '/access/statistic/resident'
                     },
                     { 
-                    title: 'Identity of resident',
-                    link: '/access/statistic/identity'
+                      title: 'House Hold',
+                      link: '/access/statistic/household'
                     },
                     { 
-                    title: 'Resident / in the zone',
-                    link: '/access/statistic/residents'
+                      title: 'Out of School Youth',
+                      link: '/access/statistic/outofschool'
+                    },
+                    { 
+                      title: 'Vaccine',
+                      link: '/access/statistic/vaccine'
+                    },
+                    { 
+                      title: 'Resident / in the zone',
+                      link: '/access/statistic/zone'
                     },
                 ],
                 title: 'Statistical',
@@ -130,18 +173,22 @@ export default {
               },
 
               { 
-                action: 'mdi-qrcode-remove',
+                action: 'mdi-swap-vertical-bold',
                 items: [
                     { 
-                      title: 'Scanner',
-                      link: '/access/qrscanner'
+                      title: 'Import',
+                      link: '/access/import'
                     },
-                    
+                    { 
+                      title: 'Export',
+                      link: '/access/import'
+                    }
                 ],
-                title: 'QRCode',
-              }
+                title: 'Import or Export Data',
+              },
+
       ],
-      title: 'Barangay Bayabas'
+      title: 'Barangay Carmen'
     }
   }
 }

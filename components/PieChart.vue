@@ -9,22 +9,21 @@
 <script>
     export default {
         props:{
-           covid : Array
+           samplerecord : Array
         },
         data (){
             return {
 
                 barChartData: {
                 labels: [
-                    'Currently Diagnosed',
-                    'Not Exposed',
-                    'Recovered',
+                    'Registered',
+                    'Unregistered',
                     
                     ],
                     datasets: [
                     {
                         label: 'Length',
-                        data: this.covid,
+                        data: this.samplerecord,
                         backgroundColor: ['#3D5B59','#B5E5CF','#FCB5AC']
                     }
                     ]
@@ -44,8 +43,8 @@
             }
         },
         mounted (){
-            if(this.covid.length != 0){
-                this.barChartData.datasets[0].data = this.covid;
+            if(this.samplerecord.length != 0){
+                this.barChartData.datasets[0].data = this.samplerecord;
             }
         }
     }

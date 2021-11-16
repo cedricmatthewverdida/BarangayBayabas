@@ -1,7 +1,8 @@
 <template>
     <v-card
-    class="mt-15"
-    shaped
+    class="card"
+    outlined
+    elevation="1"
     >
         <v-card-text
         class="container">
@@ -67,32 +68,14 @@
                         >
                         </v-select>
 
-                        <v-select
+                       <v-combobox
                         v-model="editedItem.vaccine"
                         filled
                         rounded
                         :items="vaccine_status"
                         label="Vaccine Status"
                         >
-                        </v-select>
-
-                        <v-select
-                        v-model="editedItem.voter"
-                        filled
-                        rounded
-                        :items="voter_status"
-                        label="Voter Status"
-                        >
-                        </v-select>
-
-                        <v-select
-                        v-model="editedItem.covid"
-                        filled
-                        rounded
-                        :items="covid_status"
-                        label="Covid Status"
-                        >
-                        </v-select>
+                        </v-combobox>
 
                       </v-container>
                     </v-card-text>
@@ -174,33 +157,18 @@
         'James Yap'
       ],
 
-      covid_status:[
-        'Currently Diagnosed',
-        'Not Exposed',
-        'Recovered',
-      ],
-
       vaccine_status:[
-        'Vaccinated',
-        'Unvaccinated'
-      ],
-      
-      voter_status: [
-        'Registered',
-        'Unregistered'
+        'Anti Tetanus',
+        'Covid Vaccine',
+        'Small Pox',
+        'MMR Vaccine',
       ],
 
       headers: [
-        {
-          text: 'ID #',
-          align: 'start',
-          sortable: false,
-          value: 'id',
-        },
-        { text: 'Name', value: 'name' },
+        { text: 'FirstName', value: 'firstname' },
+        { text: 'MiddleName', value: 'middlename' },
+        { text: 'LastName', value: 'lastname' },
         { text: 'Vaccine', value: 'vaccine' },
-        { text: 'Voter', value: 'voter' },
-        { text: 'Covid', value: 'covid' },
         { text: 'Updated', value: 'updated' },
         { text: 'Created', value: 'created' },
         { text: 'Actions', value: 'actions', sortable: false },
@@ -209,15 +177,11 @@
       editedIndex: -1,
       editedItem: {
         name: '',
-        vaccine: '',
-        voter: '',
-        covid: '',
+        vaccine: ''
       },
       defaultItem: {
         name: '',
-        vaccine: '',
-        voter: '',
-        covid: '',
+        vaccine: ''
       },
     }),
 
@@ -248,47 +212,42 @@
 
         this.resident = [
             {
-                id: 'XACeq',
-                name : "Ana Rosani O. Kagatan",
-                vaccine: "Vaccinated",
-                voter: "Registered",
-                covid: "Currently Diagnosed",
+                firstname: "Ana Rosani",
+                middlename: "O",
+                lastname: "Kagatan",
+                vaccine: "Anti Tetanus",
                 updated : 'Thu Oct 30 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             },
             {
-                id: 'QWEFA',
-                name : "Merson O. La Vactoria",
-                vaccine: "Unvaccinated",
-                voter: "Registered",
-                covid: "Currently Diagnosed",
+                firstname: "Merson",
+                middlename: "Opena",
+                lastname: "La Vactoria",
+                vaccine: "Small Pox",
                 updated : 'Thu Nov 1 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             },
             {
-                id: 'ZXCAW',
-                name : "Hazel L. Cagadas",
-                vaccine: "Vaccinated",
-                voter: "Registered",
-                covid: "Currently Diagnosed",
+                firstname: "Hazel",
+                middlename: "L",
+                lastname: "Cagadas",
+                vaccine: "MMR vaccine",
                 updated : 'Thu Nov 2 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             },
             {
-                id: 'EQTEQ',
-                name : "Medeliza S. Bagyuro",
-                vaccine: "Vaccinated",
-                voter: "Unregistered",
-                covid: "Recovered",
+                firstname: "Medeliza",
+                middlename: "S",
+                lastname: "Bagyuro",
+                vaccine: "Anti Tetanus",
                 updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             },
             {
-                id: 'tEQWQ',
-                name : "James Yap",
-                vaccine: "Vaccinated",
-                voter: "Unregistered",
-                covid: "Not Exposed",
+                firstname: "James",
+                middlename: "N/A",
+                lastname: "Yap",
+                vaccine: "MMR vaccine",
                 updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             }
@@ -348,11 +307,11 @@
 </script>
 
 
-<style>
-  .card {
-      backdrop-filter: blur(16px) saturate(180%);
-      -webkit-backdrop-filter: blur(16px) saturate(180%);
-      border-radius: 12px;
-      border: 1px solid rgba(209, 213, 219, 0.3);
-  }
+<style scoped>
+.card {
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border-radius: 12px;
+    border: 1px solid rgba(209, 213, 219, 0.3);
+}
 </style>

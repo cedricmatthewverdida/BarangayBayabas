@@ -1,7 +1,8 @@
 <template>
     <v-card
-    class="mt-15"
-    shaped
+    class="card"
+    outlined
+    elevation="1"
     >
         <v-card-text
         class="container">
@@ -67,14 +68,14 @@
                         >
                         </v-select>
 
-                        <v-select
+                       <v-combobox
                         v-model="editedItem.zone"
                         filled
                         rounded
-                        :items="zone_status"
-                        label="Vaccine Status"
+                        :items="zone_list"
+                        label="Zone Status"
                         >
-                        </v-select>
+                        </v-combobox>
 
                       </v-container>
                     </v-card-text>
@@ -156,25 +157,17 @@
         'James Yap'
       ],
 
-      zone_status:[
+      zone_list:[
         'Zone 1',
         'Zone 2',
         'Zone 3',
-        'Zone 4',
-        'Zone 5',
-        'Zone 6',
-        'Zone 7',
-        'Zone 8',
+        'Zone 4'
       ],
 
       headers: [
-        {
-          text: 'ID #',
-          align: 'start',
-          sortable: false,
-          value: 'id',
-        },
-        { text: 'Name', value: 'name' },
+        { text: 'FirstName', value: 'firstname' },
+        { text: 'MiddleName', value: 'middlename' },
+        { text: 'LastName', value: 'lastname' },
         { text: 'Zone', value: 'zone' },
         { text: 'Updated', value: 'updated' },
         { text: 'Created', value: 'created' },
@@ -184,11 +177,11 @@
       editedIndex: -1,
       editedItem: {
         name: '',
-        zone: ''
+        vaccine: ''
       },
       defaultItem: {
         name: '',
-        zone: ''
+        vaccine: ''
       },
     }),
 
@@ -219,37 +212,42 @@
 
         this.resident = [
             {
-                id: 'XACeq',
-                name : "Ana Rosani O. Kagatan",
-                zone: "Zone 2",
+                firstname: "Ana Rosani",
+                middlename: "O",
+                lastname: "Kagatan",
+                zone: "Zone 1",
                 updated : 'Thu Oct 30 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             },
             {
-                id: 'QWEFA',
-                name : "Merson O. La Vactoria",
-                zone: "Zone 3",
+                firstname: "Merson",
+                middlename: "Opena",
+                lastname: "La Vactoria",
+                zone: "Zone 4",
                 updated : 'Thu Nov 1 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             },
             {
-                id: 'ZXCAW',
-                name : "Hazel L. Cagadas",
-                zone: "Zone 5",
+                firstname: "Hazel",
+                middlename: "L",
+                lastname: "Cagadas",
+                zone: "Zone 1",
                 updated : 'Thu Nov 2 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             },
             {
-                id: 'EQTEQ',
-                name : "Medeliza S. Bagyuro",
+                firstname: "Medeliza",
+                middlename: "S",
+                lastname: "Bagyuro",
                 zone: "Zone 3",
                 updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             },
             {
-                id: 'tEQWQ',
-                name : "James Yap",
-                zone: "Zone 8",
+                firstname: "James",
+                middlename: "N/A",
+                lastname: "Yap",
+                zone: "Zone 2",
                 updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             }
@@ -309,11 +307,11 @@
 </script>
 
 
-<style>
-  .card {
-      backdrop-filter: blur(16px) saturate(180%);
-      -webkit-backdrop-filter: blur(16px) saturate(180%);
-      border-radius: 12px;
-      border: 1px solid rgba(209, 213, 219, 0.3);
-  }
+<style scoped>
+.card {
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border-radius: 12px;
+    border: 1px solid rgba(209, 213, 219, 0.3);
+}
 </style>

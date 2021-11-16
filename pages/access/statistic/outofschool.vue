@@ -1,7 +1,8 @@
 <template>
     <v-card
-    class="mt-15"
-    shaped
+    class="card"
+    outlined
+    elevation="1"
     >
         <v-card-text
         class="container">
@@ -64,15 +65,6 @@
                         rounded
                         :items="users"
                         label="Name"
-                        >
-                        </v-select>
-
-                        <v-select
-                        v-model="editedItem.adolescent"
-                        filled
-                        rounded
-                        :items="adolescent_status"
-                        label="Vaccine Status"
                         >
                         </v-select>
 
@@ -156,22 +148,11 @@
         'James Yap'
       ],
 
-      adolescent_status:[
-        'Teen',
-        'Young Adult',
-        'Adult',
-        'Child'
-      ],
 
       headers: [
-        {
-          text: 'ID #',
-          align: 'start',
-          sortable: false,
-          value: 'id',
-        },
-        { text: 'Name', value: 'name' },
-        { text: 'Adolescent', value: 'adolescent' },
+        { text: 'FirstName', value: 'firstname' },
+        { text: 'MiddleName', value: 'middlename' },
+        { text: 'LastName', value: 'lastname' },
         { text: 'Updated', value: 'updated' },
         { text: 'Created', value: 'created' },
         { text: 'Actions', value: 'actions', sortable: false },
@@ -180,11 +161,9 @@
       editedIndex: -1,
       editedItem: {
         name: '',
-        adolescent: ''
       },
       defaultItem: {
         name: '',
-        adolescent: ''
       },
     }),
 
@@ -215,37 +194,9 @@
 
         this.resident = [
             {
-                id: 'XACeq',
-                name : "Ana Rosani O. Kagatan",
-                adolescent: "Teen",
-                updated : 'Thu Oct 30 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                id: 'QWEFA',
-                name : "Merson O. La Vactoria",
-                adolescent: "Young Adult",
-                updated : 'Thu Nov 1 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                id: 'ZXCAW',
-                name : "Hazel L. Cagadas",
-                adolescent: "Child",
-                updated : 'Thu Nov 2 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                id: 'EQTEQ',
-                name : "Medeliza S. Bagyuro",
-                adolescent: "Adult",
-                updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                id: 'tEQWQ',
-                name : "James Yap",
-                adolescent: "Teen",
+                firstname: "James",
+                middlename: "N/A",
+                lastname: "Yap",
                 updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             }
@@ -305,11 +256,11 @@
 </script>
 
 
-<style>
-  .card {
-      backdrop-filter: blur(16px) saturate(180%);
-      -webkit-backdrop-filter: blur(16px) saturate(180%);
-      border-radius: 12px;
-      border: 1px solid rgba(209, 213, 219, 0.3);
-  }
+<style scoped>
+.card {
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border-radius: 12px;
+    border: 1px solid rgba(209, 213, 219, 0.3);
+}
 </style>

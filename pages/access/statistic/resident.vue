@@ -1,7 +1,8 @@
 <template>
     <v-card
-    class="mt-15"
-    shaped
+    class="card"
+    outlined
+    elevation="1"
     >
         <v-card-text
         class="container">
@@ -58,38 +59,71 @@
                     <v-card-text>
                       <v-container>
 
-                        <v-select
-                        v-model="editedItem.name"
+                        <v-text-field
+                        v-model="editedItem.firstname"
                         filled
                         rounded
-                        :items="users"
-                        label="Name"
+                        label="First Name"
                         >
-                        </v-select>
+                        </v-text-field>
 
                         <v-text-field
-                        v-model="editedItem.complain"
+                        v-model="editedItem.middlename"
                         filled
                         rounded
-                        label="Complain"
+                        label="Middle Name"
+                        >
+                        </v-text-field>
+                        
+                        <v-text-field
+                        v-model="editedItem.lastname"
+                        filled
+                        rounded
+                        label="Last Name"
+                        >
+                        </v-text-field>
+
+                        <v-text-field
+                        v-model="editedItem.suffix"
+                        filled
+                        rounded
+                        label="Suffix"
+                        >
+                        </v-text-field>
+
+                        <v-text-field
+                        v-model="editedItem.age"
+                        filled
+                        rounded
+                        type="number"
+                        label="Age"
                         >
                         </v-text-field>
 
                         <v-select
-                        v-model="editedItem.respondent"
+                        v-model="editedItem.job"
                         filled
                         rounded
-                        :items="official"
-                        label="Assigned Official"
+                        :items="job_status"
+                        label="Job Status"
                         >
                         </v-select>
 
                         <v-select
-                        v-model="editedItem.status"
+                        v-model="editedItem.voter"
                         filled
                         rounded
-                        :items="status"
-                        label="Covid Status"
+                        :items="voter_status"
+                        label="Voter Status"
+                        >
+                        </v-select>
+
+                        <v-select
+                        v-model="editedItem.mortality"
+                        filled
+                        rounded
+                        :items="mortality_status"
+                        label="Mortality Status"
                         >
                         </v-select>
 
@@ -165,37 +199,36 @@
 
       search: '',
 
-      users:[
-        'Ana Rosani O. Kagatan',
-        'Merson O. La Vactoria',
-        'Hazel L. Cagadas',
-        'Medeliza S. Bagyuro',
-        'James Yap'
+      vaccine_status:[
+        'Anti Tetanus',
+        'MMR Vaccine',
+        'Covid Vaccine',
+        'Small Pox'
+      ],
+      
+      job_status: [
+        'Employed',
+        'Unemployed'
+      ],
+      mortality_status: [
+        'Alive',
+        'Dead'
       ],
 
-      official:[
-        'Hazel L. Cagadas',
-        'John Santa Cruz',
-        'James Yap'
-      ],
-
-      status:[
-        'Proccess',
-        'InProccess',
-        'Convict',
+      voter_status: [
+        'Registered',
+        'Unregistered'
       ],
 
       headers: [
-        {
-          text: 'ID #',
-          align: 'start',
-          sortable: false,
-          value: 'id',
-        },
-        { text: 'Name', value: 'name' },
-        { text: 'Complain', value: 'complain' },
-        { text: 'Respondent', value: 'respondent' },
-        { text: 'Status', value: 'status' },
+        { text: 'FirstName', value: 'firstname' },
+        { text: 'MiddleName', value: 'middlename' },
+        { text: 'LastName', value: 'lastname' },
+        { text: 'Age', value: 'age' },
+        { text: 'Suffix', value: 'suffix' },
+        { text: 'Job', value: 'job' },
+        { text: 'Voter', value: 'voter' },
+        { text: 'Mortality', value: 'mortality' },
         { text: 'Updated', value: 'updated' },
         { text: 'Created', value: 'created' },
         { text: 'Actions', value: 'actions', sortable: false },
@@ -203,16 +236,26 @@
       resident: [],
       editedIndex: -1,
       editedItem: {
-        name: '',
-        complain: '',
-        respondent: '',
-        status: '',
+        firstname:'',
+        middlename:'',
+        lastname:'',
+        suffix: '',
+        age: '',
+        sex: '',
+        job: '',
+        voter: '',
+        mortality: ''
       },
       defaultItem: {
-        name: '',
-        complain: '',
-        respondent: '',
-        status: '',
+        firstname:'',
+        middlename:'',
+        lastname:'',
+        suffix: '',
+        age: '',
+        sex: '',
+        job: '',
+        voter: '',
+        mortality: ''
       },
     }),
 
@@ -243,47 +286,67 @@
 
         this.resident = [
             {
-                id: 'XACeq',
-                name : "Ana Rosani O. Kagatan",
-                complain: "ChingWoahWi",
-                respondent: 'John Santa Cruz',
-                status: 'Proccess',
+                firstname: "Ana Rosani",
+                middlename: "O",
+                lastname: "Kagatan",
+                suffix: 'N/A',
+                age: "21",
+                sex: "Female",
+                job: 'Employed',
+                voter: "Registered",
+                mortality: 'Alive',
                 updated : 'Thu Oct 30 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             },
             {
-                id: 'QWEFA',
-                name : "Merson O. La Vactoria",
-                complain: "ChingWoahWi",
-                respondent: 'John Santa Cruz',
-                status: 'Proccess',
+                firstname: "Merson",
+                middlename: "Opena",
+                lastname: "La Vactoria",
+                suffix: 'N/A',
+                age: "21",
+                sex: "Male",
+                job: 'Employed',
+                voter: "Registered",
+                mortality: 'Alive',
                 updated : 'Thu Nov 1 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             },
             {
-                id: 'ZXCAW',
-                name : "Hazel L. Cagadas",
-                complain: "ChingWoahWi",
-                respondent: 'John Santa Cruz',
-                status: 'Proccess',
+                firstname: "Hazel",
+                middlename: "L",
+                lastname: "Cagadas",
+                suffix: 'N/A',
+                age: "21",
+                sex: "Female",
+                job: 'Unemployed',
+                voter: "Registered",
+                mortality: 'Alive',
                 updated : 'Thu Nov 2 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             },
             {
-                id: 'EQTEQ',
-                name : "Medeliza S. Bagyuro",
-                complain: "ChingWoahWi",
-                respondent: 'John Santa Cruz',
-                status: 'Proccess',
+                firstname: "Medeliza",
+                middlename: "S",
+                lastname: "Bagyuro",
+                suffix: 'N/A',
+                age: "21",
+                sex: "Female",
+                job: 'Employed',
+                voter: "Unregistered",
+                mortality: 'Alive',
                 updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             },
             {
-                id: 'tEQWQ',
-                name : "James Yap",
-                complain: "ChingWoahWi",
-                respondent: 'John Santa Cruz',
-                status: 'Proccess',
+                firstname: "James",
+                middlename: "N/A",
+                lastname: "Yap",
+                suffix: 'N/A',
+                age: "21",
+                sex: "Male",
+                job: 'Unemployed',
+                voter: "Unregistered",
+                mortality: 'Alive',
                 updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
                 created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
             }
@@ -343,11 +406,11 @@
 </script>
 
 
-<style>
-  .card {
-      backdrop-filter: blur(16px) saturate(180%);
-      -webkit-backdrop-filter: blur(16px) saturate(180%);
-      border-radius: 12px;
-      border: 1px solid rgba(209, 213, 219, 0.3);
-  }
+<style scoped>
+.card {
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border-radius: 12px;
+    border: 1px solid rgba(209, 213, 219, 0.3);
+}
 </style>

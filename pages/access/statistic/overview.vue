@@ -13,46 +13,18 @@
         >
           <v-hover v-slot="{ hover }">
             <v-card
-              :elevation="hover ? 12 : 2"
+              :elevation="hover ? 12 : 1"
               :class="{ 'on-hover': hover }"
+              dark
+              :color="item.color"
             >
               
-                <v-card-title class="text-h6 white--text">
-                  <v-row
-                    class="fill-height flex-column"
-                    justify="space-between"
-                  >
-                    <p class="mt-4 subheading text-left" style="background: rgba(0, 0, 0, 0.5);">
-                      {{ item.title }}
-                    </p>
-
-                    <div>
-                      <p class="ma-0 text-body-1 font-weight-bold font-italic text-left" style="background: rgba(0, 0, 0, 0.5);">>
-                        {{ item.text }}
-                      </p>
-                      <p class="text-caption font-weight-medium font-italic text-left" style="background: rgba(0, 0, 0, 0.5);">>
-                        {{ item.subtext }}
-                      </p>
-                    </div>
-
-                    <div class="align-self-center">
-                      <v-btn
-                        v-for="(icon, index) in icons"
-                        :key="index"
-                        :class="{ 'show-btns': hover }"
-                        :color="transparent"
-                        icon
-                      >
-                        <v-icon
-                          :class="{ 'show-btns': hover }"
-                          :color="transparent"
-                        >
-                          {{ icon }}
-                        </v-icon>
-                      </v-btn>
-                    </div>
-                  </v-row>
+                <v-card-title>
+                  {{item.title}}
                 </v-card-title>
+                <v-card-subtitle>
+                  {{item.text}}: <b>{{item.subtext}}</b>
+                </v-card-subtitle>
             </v-card>
           </v-hover>
         </v-col>
@@ -62,19 +34,44 @@
     <v-row>
         <v-col>
             <v-card
-            outlined
+            tile
             >
                 <v-card-title>
-                    Pie Chart
+                    <v-menu offset-y>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                          depressed
+                          text
+                          rounded
+                          v-bind="attrs"
+                          v-on="on"
+                        >
+                          <v-icon>
+                          mdi-chart-bar-stacked
+                        </v-icon>
+                        <span class="ml-1">SELECT CHART STYLE</span>
+                        </v-btn>
+                      </template>
+                      <v-list>
+
+                        <v-list-item>
+                          <v-list-item-title>Pie Chart</v-list-item-title>
+                        </v-list-item>
+
+                        <v-list-item to="/">
+                          <v-list-item-title>Bar Chart</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
                 </v-card-title>
                 <v-card-text>
-                    <PieChart :covid="covid"/>
+                    <PieChart :samplerecord="samplerecord"/>
                 </v-card-text>
             </v-card>
         </v-col>
         <v-col>
             <v-card
-            outlined
+            tile
             >
 
             <v-card-text>
@@ -85,12 +82,12 @@
                     color="primary"
                 >
                     <v-list-item
-                    v-for="(item, i) in covidrecord"
+                    v-for="(item, i) in record"
                     :key="i"
                     >
                     <v-list-item-content>
                         <v-list-item-title>{{item.name}}</v-list-item-title>
-                        <v-list-item-subtitle>{{item.covid}}</v-list-item-subtitle>
+                        <v-list-item-subtitle>{{item.voter}}</v-list-item-subtitle>
                     </v-list-item-content>
                     </v-list-item>
                 </v-list-item-group>
@@ -113,28 +110,46 @@ import PieChart from '~/components/PieChart.vue';
       icons: ['mdi-rewind', 'mdi-play', 'mdi-fast-forward'],
       items: [
         {
-          title: 'Covid',
-          text: `Total Case`,
-          subtext: '50',
-          img: 'https://images.unsplash.com/photo-1583324113626-70df0f4deaab?ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8dmlydXN8ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80',
+          title: 'Out of School Youth',
+          text: `Total Out of School Youth`,
+          subtext: '1 out of 10',
+          color: 'primary'
         },
         {
           title: 'Vaccination',
           text: 'Total Vaccinated',
-          subtext: '10',
-          img: 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2100&q=80',
+          subtext: '10 out of 10',
+          color: 'pink'
         },
         {
           title: 'Voters',
           text: 'Total Registered Voters',
-          subtext: '35',
-          img: 'https://images.unsplash.com/photo-1542320868-f4d80389e1c4?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=3750&q=80',
+          subtext: '5 out of 10',
+          color: 'purple'
+        },
+        {
+          title: 'Employed',
+          text: `Total Employed`,
+          subtext: '3 out of 10',
+          color: 'dark'
+        },
+        {
+          title: 'Male',
+          text: `Total Male`,
+          subtext: '5',
+          color: 'teal'
+        },
+        {
+          title: 'Female',
+          text: `Total Female`,
+          subtext: '5',
+          color: 'black'
         },
       ],
-      covid: [
-        2,1,1
+      samplerecord: [
+        3,1
       ],
-      covidrecord: [
+      record: [
             {
                 id: 'XACeq',
                 name : "Ana Rosani O. Kagatan",
