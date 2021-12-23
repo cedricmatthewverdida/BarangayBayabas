@@ -8,7 +8,7 @@
         class="container">
           <v-data-table
             :headers="headers"
-            :items="resident"
+            :items="outofschool"
             sort-by="name"
             :search="search"
           >
@@ -41,14 +41,16 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                      dark
                       class="mb-2"
                       v-bind="attrs"
                       v-on="on"
                       depressed
                       rounded
+                      icon
                     >
-                      New Data
+                      <v-icon>
+                        mdi-plus
+                      </v-icon>
                     </v-btn>
                   </template>
                   <v-card>
@@ -60,12 +62,24 @@
                       <v-container>
 
                         <v-select
-                        v-model="editedItem.name"
+                        v-model="editedItem.resident"
                         filled
                         rounded
                         :items="users"
                         label="Name"
+                        item-value="id"
+                        item-text="name"
+                        :disabled="editedIndex != -1"
                         >
+
+                          <template v-slot:selection="{ item }">
+                            {{item.attributes.firstname}} {{item.attributes.middlename}} {{item.attributes.lastname}}
+                          </template>
+
+                          <template v-slot:item="{ item }">
+                            {{item.attributes.firstname}} {{item.attributes.middlename}} {{item.attributes.lastname}}
+                          </template>
+
                         </v-select>
 
                       </v-container>
@@ -104,13 +118,13 @@
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <v-icon
+              <!-- <v-icon
                 small
                 class="mr-2"
                 @click="editItem(item)"
               >
                 mdi-pencil
-              </v-icon>
+              </v-icon> -->
               <v-icon
                 small
                 @click="deleteItem(item)"
@@ -121,7 +135,7 @@
             <template v-slot:no-data>
               <v-btn
                 color="primary"
-                @click="initialize"
+                @click="init"
               >
                 Reset
               </v-btn>
@@ -132,6 +146,7 @@
 </template>
 <script>
   import moment from 'moment'
+  import Moralis from 'moralis'
   export default {
     data: () => ({
 
@@ -140,31 +155,29 @@
 
       search: '',
 
-      users:[
-        'Ana Rosani O. Kagatan',
-        'Merson O. La Vactoria',
-        'Hazel L. Cagadas',
-        'Medeliza S. Bagyuro',
-        'James Yap'
-      ],
+      users:[],
+
+      activeObj: [],
 
 
       headers: [
-        { text: 'FirstName', value: 'firstname' },
-        { text: 'MiddleName', value: 'middlename' },
-        { text: 'LastName', value: 'lastname' },
-        { text: 'Updated', value: 'updated' },
-        { text: 'Created', value: 'created' },
+        { text: 'FirstName', value: 'attributes.resident.attributes.firstname' },
+        { text: 'MiddleName', value: 'attributes.resident.attributes.middlename' },
+        { text: 'LastName', value: 'attributes.resident.attributes.lastname' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
-      resident: [],
+
+      outofschool: [],
       editedIndex: -1,
+
       editedItem: {
-        name: '',
+        resident: '',
       },
+
       defaultItem: {
-        name: '',
+        resident: '',
       },
+
     }),
 
     computed: {
@@ -185,43 +198,173 @@
       },
     },
 
-    created () {
-      this.initialize()
+    mounted () {
+
+      this.init()
+
+      this.loadResident()
+      this.initSocket()
+
     },
 
     methods: {
-      initialize () {
 
-        this.resident = [
-            {
-                firstname: "James",
-                middlename: "N/A",
-                lastname: "Yap",
-                updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            }
-        ]
+
+      async createData (){
+
+        let resident = this.users.find(o => o.id === this.editedItem.resident)
+
+        const Outofschool = Moralis.Object.extend("Outofschool");
+        const query = new Moralis.Query(Outofschool);
+        const outofschool = new Outofschool();
+        query.equalTo("resident", resident);
+        const results = await query.find();
+        if(results.length == 0){
+          await outofschool.save({
+            resident: resident,
+            responsible: Moralis.User.current()
+          })
+          .then((outofschool) => {
+
+            const Notification = Moralis.Object.extend("Notification");
+            const notification = new Notification();
+            notification.set("content", "Added a new outofschool data");
+            notification.set("notifiedby", Moralis.User.current())
+            notification.save();
+
+
+            this.$store.dispatch('snackbar/setSnackbar', {
+              text : "Successfuly created",
+              color : 'primary'
+            });
+
+            return resident;
+
+          }, (error) => {
+
+            this.$store.dispatch('snackbar/setSnackbar', {
+              text : error.message,
+              color : 'error'
+            });
+
+          });
+        }else{
+          this.$store.dispatch('snackbar/setSnackbar', {
+              text : "This resident has its designated address",
+              color : 'error',
+              icon: 'mdi-alert-circle-outline'
+          });
+        }
+        
+      },
+
+      async loadResident (){
+        const Resident = Moralis.Object.extend("Resident");
+        const query = new Moralis.Query(Resident);
+        const results = await query.find();
+        this.users =  results.reverse();
+      },
+
+      async init (){
+        const OutofSchool = Moralis.Object.extend("Outofschool");
+        const query = new Moralis.Query(OutofSchool);
+        const results = await query.find();
+        this.outofschool =  results.reverse();
+      },
+
+
+      async initSocket() {
+        let query = new Moralis.Query('Outofschool');
+        let subscription = await query.subscribe();
+
+
+        subscription.on('create', (object) => {
+          this.outofschool.unshift(object);
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "New data appeared",
+            color : 'purple'
+          });
+        });
+
+        subscription.on('update', (object) => {
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : object.attributes.responsible.get('username') + " updated a data",
+            color : 'purple'
+          });
+          console.log(object);
+        });
+
+        subscription.on('delete', (object) => {
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Data with id of '" +object.id + "' has been deleted",
+            color : 'purple'
+          });
+          this.outofschool.splice(this.editedIndex, 1)
+          this.closeDelete()
+        });
+
+      },
+
+      async updateData (){
+        let house = this.editedItem.address
+        const household = this.activeObj;
+        await household.save({
+          address: house,
+          responsible: Moralis.User.current()
+        })
+        .then((household) => {
+
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Successfuly updated",
+            color : 'warning'
+          });
+
+          return household;
+
+        }, (error) => {
+
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : error.message,
+            color : 'error'
+          });
+
+        });
+      },
+
+      async deleteData (obj){
+        const household = this.activeObj;
+        household.unset(obj);
+        await household.destroy();
+
+        this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Successfuly deleted",
+            color : 'primary'
+        });
       },
 
       editItem (item) {
-        this.editedIndex = this.resident.indexOf(item)
-        this.editedItem = Object.assign({}, item)
+        this.activeObj = item;
+        this.editedIndex = this.outofschool.indexOf(item)
+        this.editedItem = Object.assign({}, item.attributes)
+        // this.editedItem.address = item.attributes.address
+        // this.editedItem.name = item.attributes.resident
         console.log(this.editedItem)
         this.dialog = true
       },
 
       deleteItem (item) {
-        this.editedIndex = this.resident.indexOf(item)
+        this.activeObj = item
+        this.editedIndex = this.outofschool.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialogDelete = true
       },
 
       deleteItemConfirm () {
-        this.resident.splice(this.editedIndex, 1)
-        this.closeDelete()
+        this.deleteData(this.activeObj);
       },
 
       close () {
+        this.activeObj = []
         this.dialog = false
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
@@ -237,11 +380,11 @@
         })
       },
 
-      save () {
+      save (){
         if (this.editedIndex > -1) {
-          Object.assign(this.resident[this.editedIndex], this.editedItem)
+          this.updateData()
         } else {
-          this.resident.push(this.editedItem)
+          this.createData()
         }
         this.close()
       },
@@ -263,4 +406,4 @@
     border-radius: 12px;
     border: 1px solid rgba(209, 213, 219, 0.3);
 }
-</style>
+</style> 

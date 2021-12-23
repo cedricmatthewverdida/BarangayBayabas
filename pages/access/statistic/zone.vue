@@ -8,17 +8,10 @@
         class="container">
           <v-data-table
             :headers="headers"
-            :items="resident"
+            :items="zone"
             sort-by="name"
             :search="search"
           >
-            <template v-slot:item.created="{ item }">
-              {{ item.created | format_time }}
-            </template>
-
-            <template v-slot:item.updated="{ item }">
-              {{ item.updated | format_time }}
-            </template>
 
             <template v-slot:top>
               <v-toolbar
@@ -41,14 +34,16 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                      dark
                       class="mb-2"
                       v-bind="attrs"
                       v-on="on"
                       depressed
                       rounded
+                      icon
                     >
-                      New Data
+                      <v-icon>
+                        mdi-plus
+                      </v-icon>
                     </v-btn>
                   </template>
                   <v-card>
@@ -60,12 +55,24 @@
                       <v-container>
 
                         <v-select
-                        v-model="editedItem.name"
+                        v-model="editedItem.resident"
                         filled
                         rounded
                         :items="users"
                         label="Name"
+                        item-value="id"
+                        item-text="name"
+                        :disabled="editedIndex != -1"
                         >
+
+                          <template v-slot:selection="{ item }">
+                            {{item.attributes.firstname}} {{item.attributes.middlename}} {{item.attributes.lastname}}
+                          </template>
+
+                          <template v-slot:item="{ item }">
+                            {{item.attributes.firstname}} {{item.attributes.middlename}} {{item.attributes.lastname}}
+                          </template>
+
                         </v-select>
 
                        <v-combobox
@@ -73,7 +80,7 @@
                         filled
                         rounded
                         :items="zone_list"
-                        label="Zone Status"
+                        label="Zone"
                         >
                         </v-combobox>
 
@@ -130,7 +137,7 @@
             <template v-slot:no-data>
               <v-btn
                 color="primary"
-                @click="initialize"
+                @click="init"
               >
                 Reset
               </v-btn>
@@ -141,6 +148,7 @@
 </template>
 <script>
   import moment from 'moment'
+  import Moralis from 'moralis'
   export default {
     data: () => ({
 
@@ -149,13 +157,9 @@
 
       search: '',
 
-      users:[
-        'Ana Rosani O. Kagatan',
-        'Merson O. La Vactoria',
-        'Hazel L. Cagadas',
-        'Medeliza S. Bagyuro',
-        'James Yap'
-      ],
+      users:[],
+
+      activeObj: [],
 
       zone_list:[
         'Zone 1',
@@ -164,25 +168,29 @@
         'Zone 4'
       ],
 
+
+
       headers: [
-        { text: 'FirstName', value: 'firstname' },
-        { text: 'MiddleName', value: 'middlename' },
-        { text: 'LastName', value: 'lastname' },
-        { text: 'Zone', value: 'zone' },
-        { text: 'Updated', value: 'updated' },
-        { text: 'Created', value: 'created' },
+        { text: 'FirstName', value: 'attributes.resident.attributes.firstname' },
+        { text: 'MiddleName', value: 'attributes.resident.attributes.middlename' },
+        { text: 'LastName', value: 'attributes.resident.attributes.lastname' },
+        { text: 'Zone', value: 'attributes.zone' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
-      resident: [],
+
+      zone: [],
       editedIndex: -1,
+
       editedItem: {
-        name: '',
-        vaccine: ''
+        resident: '',
+        zone: ''
       },
+
       defaultItem: {
-        name: '',
-        vaccine: ''
+        resident: '',
+        zone: ''
       },
+
     }),
 
     computed: {
@@ -203,76 +211,177 @@
       },
     },
 
-    created () {
-      this.initialize()
+    mounted () {
+
+      this.init()
+
+      this.loadResident()
+
+
+      this.initSocket()
+
     },
 
     methods: {
-      initialize () {
 
-        this.resident = [
-            {
-                firstname: "Ana Rosani",
-                middlename: "O",
-                lastname: "Kagatan",
-                zone: "Zone 1",
-                updated : 'Thu Oct 30 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "Merson",
-                middlename: "Opena",
-                lastname: "La Vactoria",
-                zone: "Zone 4",
-                updated : 'Thu Nov 1 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "Hazel",
-                middlename: "L",
-                lastname: "Cagadas",
-                zone: "Zone 1",
-                updated : 'Thu Nov 2 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "Medeliza",
-                middlename: "S",
-                lastname: "Bagyuro",
-                zone: "Zone 3",
-                updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "James",
-                middlename: "N/A",
-                lastname: "Yap",
-                zone: "Zone 2",
-                updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            }
-        ]
+
+      async createData (){
+
+        let resident = this.users.find(o => o.id === this.editedItem.resident)
+        let zoneAddress = this.editedItem.zone
+
+        const Zone = Moralis.Object.extend("Zone");
+        const query = new Moralis.Query(Zone);
+        const zone = new Zone();
+        query.equalTo("resident", resident);
+        const results = await query.find();
+        if(results.length == 0){
+          await zone.save({
+            resident: resident,
+            zone: zoneAddress,
+            responsible: Moralis.User.current()
+          })
+          .then((household) => {
+
+            const Notification = Moralis.Object.extend("Notification");
+            const notification = new Notification();
+            notification.set("content", "Added a new zone data");
+            notification.set("notifiedby", Moralis.User.current())
+            notification.save();
+
+
+            this.$store.dispatch('snackbar/setSnackbar', {
+              text : "Successfuly created",
+              color : 'primary'
+            });
+
+            return resident;
+
+          }, (error) => {
+
+            this.$store.dispatch('snackbar/setSnackbar', {
+              text : error.message,
+              color : 'error'
+            });
+
+          });
+        }else{
+          this.$store.dispatch('snackbar/setSnackbar', {
+              text : "This resident has its designated address",
+              color : 'error',
+              icon: 'mdi-alert-circle-outline'
+          });
+        }
+        
+      },
+
+      async loadResident (){
+        const Resident = Moralis.Object.extend("Resident");
+        const query = new Moralis.Query(Resident);
+        const results = await query.find();
+        this.users =  results.reverse();
+      },
+
+      async init (){
+        const Zone = Moralis.Object.extend("Zone");
+        const query = new Moralis.Query(Zone);
+        const results = await query.find();
+        this.zone =  results.reverse();
+      },
+
+
+      async initSocket() {
+        let query = new Moralis.Query('Zone');
+        let subscription = await query.subscribe();
+
+
+        subscription.on('create', (object) => {
+          this.zone.unshift(object);
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "New data appeared",
+            color : 'purple'
+          });
+        });
+
+        subscription.on('update', (object) => {
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : object.attributes.responsible.get('username') + " updated a data",
+            color : 'purple'
+          });
+          console.log(object);
+        });
+
+        subscription.on('delete', (object) => {
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Data with id of '" +object.id + "' has been deleted",
+            color : 'purple'
+          });
+          this.zone.splice(this.editedIndex, 1)
+          this.closeDelete()
+        });
+
+      },
+
+      async updateData (){
+        let zoneAddress = this.editedItem.zone
+        const Zone = this.activeObj;
+        await Zone.save({
+          zone: zoneAddress,
+          responsible: Moralis.User.current()
+        })
+        .then((zone) => {
+
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Successfuly updated",
+            color : 'warning'
+          });
+
+          return zone;
+
+        }, (error) => {
+
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : error.message,
+            color : 'error'
+          });
+
+        });
+      },
+
+      async deleteData (obj){
+        const zone = this.activeObj;
+        zone.unset(obj);
+        await zone.destroy();
+
+        this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Successfuly deleted",
+            color : 'primary'
+        });
       },
 
       editItem (item) {
-        this.editedIndex = this.resident.indexOf(item)
-        this.editedItem = Object.assign({}, item)
+        this.activeObj = item;
+        this.editedIndex = this.zone.indexOf(item)
+        this.editedItem = Object.assign({}, item.attributes)
+        // this.editedItem.address = item.attributes.address
+        // this.editedItem.name = item.attributes.resident
         console.log(this.editedItem)
         this.dialog = true
       },
 
       deleteItem (item) {
-        this.editedIndex = this.resident.indexOf(item)
+        this.activeObj = item
+        this.editedIndex = this.zone.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialogDelete = true
       },
 
       deleteItemConfirm () {
-        this.resident.splice(this.editedIndex, 1)
-        this.closeDelete()
+        this.deleteData(this.activeObj);
       },
 
       close () {
+        this.activeObj = []
         this.dialog = false
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
@@ -288,11 +397,11 @@
         })
       },
 
-      save () {
+      save (){
         if (this.editedIndex > -1) {
-          Object.assign(this.resident[this.editedIndex], this.editedItem)
+          this.updateData()
         } else {
-          this.resident.push(this.editedItem)
+          this.createData()
         }
         this.close()
       },
@@ -314,4 +423,4 @@
     border-radius: 12px;
     border: 1px solid rgba(209, 213, 219, 0.3);
 }
-</style>
+</style> 

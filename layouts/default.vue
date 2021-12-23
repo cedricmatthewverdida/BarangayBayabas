@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app style="background-color: #F8F5F1;">
     <v-navigation-drawer
       v-model="drawer"
       clipped
@@ -7,6 +7,7 @@
     >
                   <v-list shaped>
                     <v-list-group
+                        color="#343F56"
                         v-for="item in items"
                         :key="item.title"
                         v-model="item.active"
@@ -43,17 +44,82 @@
     <v-app-bar
       clipped-left
       app
-      color="white"
-      rounded
+      color="#387C6D"
       flat
+      dark
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       
       <v-toolbar-title v-text="title" />
+      
 
       <v-spacer></v-spacer>
 
-      <v-menu offset-y>
+      
+        <v-menu
+          content-class="elevation-1"
+          v-if="user.length != 0"
+          offset-x>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+                <v-badge
+                v-if="notification.count != 0"
+                color="#F05454"
+                :content="notification.count"
+                overlap
+                left
+                bordered
+
+                >
+                  <v-icon
+                  >
+                    mdi-bell-ring
+                  </v-icon>
+                </v-badge>
+
+                <v-icon
+                v-if="notification.count == 0"
+                >
+                  mdi-bell
+                </v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+
+            <v-list-item
+              v-for="(notif,key) in notification.results"
+              :key="key"
+            >
+                <v-list-item-icon>
+                <v-avatar
+                size="30"
+                >
+                  <img
+                  :lazy-src="notif.get('notifiedby').get('profilepic')._url"
+                  :src="notif.get('notifiedby').get('profilepic')._url"
+                  >
+                </v-avatar>
+              </v-list-item-icon>
+              <v-list-item-content>
+              <v-list-item-title>{{notif.get('content')}}</v-list-item-title>
+              <v-list-item-subtitle>{{notif.get('notifiedby').get('firstname')}}&nbsp;{{notif.get('notifiedby').get('lastname')}}</v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+
+          </v-list>
+        </v-menu>
+
+        
+      
+
+      <v-menu
+      content-class="elevation-1"
+      v-if="user.length != 0"
+      offset-x>
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           depressed
@@ -61,20 +127,25 @@
           rounded
           v-bind="attrs"
           v-on="on"
+          style="text-transform:none;"
         >
-          <v-icon>
-          mdi-account
-        </v-icon>
-        <span class="ml-1">User#431</span>
+          <v-avatar
+          size="30"
+          >
+            <img
+            :lazy-src="user.attributes.profilepic._url"
+            :src="user.attributes.profilepic._url"
+            >
+          </v-avatar>
         </v-btn>
       </template>
       <v-list>
 
         <v-list-item>
-          <v-list-item-title>Profile</v-list-item-title>
+          <v-list-item-title>{{user.attributes.firstname}}</v-list-item-title>
         </v-list-item>
 
-        <v-list-item to="/">
+        <v-list-item @click="logout()">
           <v-list-item-title>Logout</v-list-item-title>
         </v-list-item>
       </v-list>
@@ -93,18 +164,39 @@
 
     <v-footer
       app
+      color="white"
     >
-      <span>&copy; {{ new Date().getFullYear() }}</span>
+      <v-avatar
+      size="30"
+      class="mr-2"
+      >
+      <v-img
+      lazy-src="https://www.vhv.rs/dpng/d/573-5731936_coc-college-logo-vector-phinma-cagayan-de-oro.png"
+      src="https://www.vhv.rs/dpng/d/573-5731936_coc-college-logo-vector-phinma-cagayan-de-oro.png"
+      >
+
+      </v-img>
+      </v-avatar>
+      <span class="overline">Cagayan de Oro College </span>
     </v-footer>
+
+    <TheSnackbar/>
   </v-app>
 </template>
 
 
 <script>
+import { mapActions,mapState } from 'vuex'
+import TheSnackbar from '@/components/TheSnackbar.vue';
+import Moralis from 'moralis'
 export default {
+  components:{
+    TheSnackbar
+  },
   data () {
     return {
       drawer: false,
+      notification: [],
       items: [
               { 
                 action: 'mdi-chart-bar',
@@ -190,6 +282,38 @@ export default {
       ],
       title: 'Barangay Carmen'
     }
-  }
+  },
+
+  computed:{
+    ...mapState(
+        [
+          'user'
+        ]
+      ),
+  },
+  
+  methods:{
+
+    ...mapActions(['loggedin']),
+
+
+    async getNotif (){
+        const response = await Moralis.Cloud.run("getNotification");
+        this.notification = response;
+        console.log(response)
+    },
+
+    async logout() {
+      await Moralis.User.logOut();
+      this.authorize_loggin([]);
+      this.$router.push('/')
+    }
+  },
+
+  mounted(){
+      this.loggedin();
+
+      this.getNotif();
+  },
 }
 </script>

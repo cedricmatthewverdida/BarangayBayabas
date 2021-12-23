@@ -8,17 +8,10 @@
         class="container">
           <v-data-table
             :headers="headers"
-            :items="resident"
+            :items="vaccination"
             sort-by="name"
             :search="search"
           >
-            <template v-slot:item.created="{ item }">
-              {{ item.created | format_time }}
-            </template>
-
-            <template v-slot:item.updated="{ item }">
-              {{ item.updated | format_time }}
-            </template>
 
             <template v-slot:top>
               <v-toolbar
@@ -41,14 +34,16 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                      dark
                       class="mb-2"
                       v-bind="attrs"
                       v-on="on"
                       depressed
                       rounded
+                      icon
                     >
-                      New Data
+                      <v-icon>
+                        mdi-plus
+                      </v-icon>
                     </v-btn>
                   </template>
                   <v-card>
@@ -60,12 +55,24 @@
                       <v-container>
 
                         <v-select
-                        v-model="editedItem.name"
+                        v-model="editedItem.resident"
                         filled
                         rounded
                         :items="users"
                         label="Name"
+                        item-value="id"
+                        item-text="name"
+                        :disabled="editedIndex != -1"
                         >
+
+                          <template v-slot:selection="{ item }">
+                            {{item.attributes.firstname}} {{item.attributes.middlename}} {{item.attributes.lastname}}
+                          </template>
+
+                          <template v-slot:item="{ item }">
+                            {{item.attributes.firstname}} {{item.attributes.middlename}} {{item.attributes.lastname}}
+                          </template>
+
                         </v-select>
 
                        <v-combobox
@@ -73,7 +80,7 @@
                         filled
                         rounded
                         :items="vaccine_status"
-                        label="Vaccine Status"
+                        label="Vaccine"
                         >
                         </v-combobox>
 
@@ -130,7 +137,7 @@
             <template v-slot:no-data>
               <v-btn
                 color="primary"
-                @click="initialize"
+                @click="init"
               >
                 Reset
               </v-btn>
@@ -141,21 +148,20 @@
 </template>
 <script>
   import moment from 'moment'
+  import Moralis from 'moralis'
   export default {
     data: () => ({
 
       dialog: false,
       dialogDelete: false,
 
+      duplicateVaccine: false,
+
       search: '',
 
-      users:[
-        'Ana Rosani O. Kagatan',
-        'Merson O. La Vactoria',
-        'Hazel L. Cagadas',
-        'Medeliza S. Bagyuro',
-        'James Yap'
-      ],
+      users:[],
+
+      activeObj: [],
 
       vaccine_status:[
         'Anti Tetanus',
@@ -164,25 +170,29 @@
         'MMR Vaccine',
       ],
 
+
+
       headers: [
-        { text: 'FirstName', value: 'firstname' },
-        { text: 'MiddleName', value: 'middlename' },
-        { text: 'LastName', value: 'lastname' },
-        { text: 'Vaccine', value: 'vaccine' },
-        { text: 'Updated', value: 'updated' },
-        { text: 'Created', value: 'created' },
+        { text: 'FirstName', value: 'attributes.resident.attributes.firstname' },
+        { text: 'MiddleName', value: 'attributes.resident.attributes.middlename' },
+        { text: 'LastName', value: 'attributes.resident.attributes.lastname' },
+        { text: 'Vaccine', value: 'attributes.vaccine' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
-      resident: [],
+
+      vaccination: [],
       editedIndex: -1,
+
       editedItem: {
-        name: '',
+        resident: '',
         vaccine: ''
       },
+
       defaultItem: {
-        name: '',
+        resident: '',
         vaccine: ''
       },
+
     }),
 
     computed: {
@@ -203,76 +213,215 @@
       },
     },
 
-    created () {
-      this.initialize()
+    mounted () {
+
+      this.init()
+
+      this.loadResident()
+
+
+      this.initSocket()
+
     },
 
     methods: {
-      initialize () {
 
-        this.resident = [
-            {
-                firstname: "Ana Rosani",
-                middlename: "O",
-                lastname: "Kagatan",
-                vaccine: "Anti Tetanus",
-                updated : 'Thu Oct 30 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "Merson",
-                middlename: "Opena",
-                lastname: "La Vactoria",
-                vaccine: "Small Pox",
-                updated : 'Thu Nov 1 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "Hazel",
-                middlename: "L",
-                lastname: "Cagadas",
-                vaccine: "MMR vaccine",
-                updated : 'Thu Nov 2 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "Medeliza",
-                middlename: "S",
-                lastname: "Bagyuro",
-                vaccine: "Anti Tetanus",
-                updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "James",
-                middlename: "N/A",
-                lastname: "Yap",
-                vaccine: "MMR vaccine",
-                updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
+
+      async createData (){
+        
+        this.duplicateVaccine = false; //Initialize Search in DB
+
+        let resident = this.users.find(o => o.id === this.editedItem.resident)
+        let vaccineDetail = this.editedItem.vaccine
+
+        const Vaccination = Moralis.Object.extend("Vaccination");
+        const query = new Moralis.Query(Vaccination);
+        const vaccination = new Vaccination();
+        query.equalTo("resident", resident);
+        const results = await query.find();
+        if(results.length != 0){
+
+          for(const vaccines in results){
+            if(results[vaccines].attributes.vaccine == vaccineDetail){
+              this.duplicateVaccine = true;
+              break;
             }
-        ]
+          }
+
+          if(this.duplicateVaccine == false){
+            await vaccination.save({
+              resident: resident,
+              vaccine: vaccineDetail,
+              responsible: Moralis.User.current()
+            })
+            .then((vaccine) => {
+
+              const Notification = Moralis.Object.extend("Notification");
+              const notification = new Notification();
+              notification.set("content", "Added a vaccination data");
+              notification.set("notifiedby", Moralis.User.current())
+              notification.save();
+
+
+              this.$store.dispatch('snackbar/setSnackbar', {
+                text : "Successfuly created",
+                color : 'primary'
+              });
+
+              return resident;
+
+            }, (error) => {
+
+              this.$store.dispatch('snackbar/setSnackbar', {
+                text : error.message,
+                color : 'error'
+              });
+            });
+          }else{
+            this.$store.dispatch('snackbar/setSnackbar', {
+                text : "Cannot add data due to duplicate vaccine",
+                color : 'error',
+                icon: 'mdi-alert-circle-outline'
+            });
+          }
+
+        }else{
+          await vaccination.save({
+              resident: resident,
+              vaccine: vaccineDetail,
+              responsible: Moralis.User.current()
+            })
+            .then((vaccine) => {
+
+              const Notification = Moralis.Object.extend("Notification");
+              const notification = new Notification();
+              notification.set("content", "Added a vaccination data");
+              notification.set("notifiedby", Moralis.User.current())
+              notification.save();
+
+
+              this.$store.dispatch('snackbar/setSnackbar', {
+                text : "Successfuly created",
+                color : 'primary'
+              });
+
+              return resident;
+
+            }, (error) => {
+
+              this.$store.dispatch('snackbar/setSnackbar', {
+                text : error.message,
+                color : 'error'
+              });
+            });
+        }
+      },
+
+      async loadResident (){
+        const Resident = Moralis.Object.extend("Resident");
+        const query = new Moralis.Query(Resident);
+        const results = await query.find();
+        this.users =  results.reverse();
+      },
+
+      async init (){
+        const Vaccination = Moralis.Object.extend("Vaccination");
+        const query = new Moralis.Query(Vaccination);
+        const results = await query.find();
+        this.vaccination =  results.reverse();
+      },
+
+
+      async initSocket() {
+        let query = new Moralis.Query('Vaccination');
+        let subscription = await query.subscribe();
+
+
+        subscription.on('create', (object) => {
+          this.vaccination.unshift(object);
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "New data appeared",
+            color : 'purple'
+          });
+        });
+
+        subscription.on('update', (object) => {
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : object.attributes.responsible.get('username') + " updated a data",
+            color : 'purple'
+          });
+          console.log(object);
+        });
+
+        subscription.on('delete', (object) => {
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Data with id of '" +object.id + "' has been deleted",
+            color : 'purple'
+          });
+          this.vaccination.splice(this.editedIndex, 1)
+          this.closeDelete()
+        });
+
+      },
+
+      async updateData (){
+        let vaccineDetail = this.editedItem.vaccine
+        const Vaccine = this.activeObj;
+        await Vaccine.save({
+          vaccine: vaccineDetail,
+          responsible: Moralis.User.current()
+        })
+        .then((zone) => {
+
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Successfuly updated",
+            color : 'warning'
+          });
+
+          return zone;
+
+        }, (error) => {
+
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : error.message,
+            color : 'error'
+          });
+
+        });
+      },
+
+      async deleteData (obj){
+        const Vaccine = this.activeObj;
+        Vaccine.unset(obj);
+        await Vaccine.destroy();
+
+        this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Successfuly deleted",
+            color : 'primary'
+        });
       },
 
       editItem (item) {
-        this.editedIndex = this.resident.indexOf(item)
-        this.editedItem = Object.assign({}, item)
+        this.activeObj = item;
+        this.editedIndex = this.vaccination.indexOf(item)
+        this.editedItem = Object.assign({}, item.attributes)
         console.log(this.editedItem)
         this.dialog = true
       },
 
       deleteItem (item) {
-        this.editedIndex = this.resident.indexOf(item)
+        this.activeObj = item
+        this.editedIndex = this.vaccination.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialogDelete = true
       },
 
       deleteItemConfirm () {
-        this.resident.splice(this.editedIndex, 1)
-        this.closeDelete()
+        this.deleteData(this.activeObj);
       },
 
       close () {
+        this.activeObj = []
         this.dialog = false
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
@@ -288,11 +437,11 @@
         })
       },
 
-      save () {
+      save (){
         if (this.editedIndex > -1) {
-          Object.assign(this.resident[this.editedIndex], this.editedItem)
+          this.updateData()
         } else {
-          this.resident.push(this.editedItem)
+          this.createData()
         }
         this.close()
       },
@@ -314,4 +463,4 @@
     border-radius: 12px;
     border: 1px solid rgba(209, 213, 219, 0.3);
 }
-</style>
+</style> 

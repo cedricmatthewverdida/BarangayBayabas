@@ -8,7 +8,7 @@
         class="container">
           <v-data-table
             :headers="headers"
-            :items="resident"
+            :items="household"
             sort-by="name"
             :search="search"
           >
@@ -41,14 +41,16 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                      dark
                       class="mb-2"
                       v-bind="attrs"
                       v-on="on"
                       depressed
                       rounded
+                      icon
                     >
-                      New Data
+                      <v-icon>
+                        mdi-plus
+                      </v-icon>
                     </v-btn>
                   </template>
                   <v-card>
@@ -60,16 +62,28 @@
                       <v-container>
 
                         <v-select
-                        v-model="editedItem.name"
+                        v-model="editedItem.resident"
                         filled
                         rounded
                         :items="users"
                         label="Name"
+                        item-value="id"
+                        item-text="name"
+                        :disabled="editedIndex != -1"
                         >
+
+                          <template v-slot:selection="{ item }">
+                            {{item.attributes.firstname}} {{item.attributes.middlename}} {{item.attributes.lastname}}
+                          </template>
+
+                          <template v-slot:item="{ item }">
+                            {{item.attributes.firstname}} {{item.attributes.middlename}} {{item.attributes.lastname}}
+                          </template>
+
                         </v-select>
 
                        <v-text-field
-                        v-model="editedItem.house"
+                        v-model="editedItem.address"
                         filled
                         rounded
                         label="House Address"
@@ -129,7 +143,7 @@
             <template v-slot:no-data>
               <v-btn
                 color="primary"
-                @click="initialize"
+                @click="init"
               >
                 Reset
               </v-btn>
@@ -140,6 +154,7 @@
 </template>
 <script>
   import moment from 'moment'
+  import Moralis from 'moralis'
   export default {
     data: () => ({
 
@@ -148,34 +163,32 @@
 
       search: '',
 
-      users:[
-        'Ana Rosani O. Kagatan',
-        'Merson O. La Vactoria',
-        'Hazel L. Cagadas',
-        'Medeliza S. Bagyuro',
-        'James Yap'
-      ],
+      users:[],
+
+      activeObj: [],
 
 
       headers: [
-        { text: 'FirstName', value: 'firstname' },
-        { text: 'MiddleName', value: 'middlename' },
-        { text: 'LastName', value: 'lastname' },
-        { text: 'house', value: 'house' },
-        { text: 'Updated', value: 'updated' },
-        { text: 'Created', value: 'created' },
+        { text: 'FirstName', value: 'attributes.resident.attributes.firstname' },
+        { text: 'MiddleName', value: 'attributes.resident.attributes.middlename' },
+        { text: 'LastName', value: 'attributes.resident.attributes.lastname' },
+        { text: 'House Address', value: 'attributes.address' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
-      resident: [],
+
+      household: [],
       editedIndex: -1,
+
       editedItem: {
-        name: '',
-        vaccine: ''
+        resident: '',
+        address: ''
       },
+
       defaultItem: {
-        name: '',
-        vaccine: ''
+        resident: '',
+        address: ''
       },
+
     }),
 
     computed: {
@@ -196,76 +209,177 @@
       },
     },
 
-    created () {
-      this.initialize()
+    mounted () {
+
+      this.init()
+
+      this.loadResident()
+
+
+      this.initSocket()
+
     },
 
     methods: {
-      initialize () {
 
-        this.resident = [
-            {
-                firstname: "Ana Rosani",
-                middlename: "O",
-                lastname: "Kagatan",
-                house: "house 1",
-                updated : 'Thu Oct 30 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "Merson",
-                middlename: "Opena",
-                lastname: "La Vactoria",
-                house: "house 4",
-                updated : 'Thu Nov 1 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "Hazel",
-                middlename: "L",
-                lastname: "Cagadas",
-                house: "house 1",
-                updated : 'Thu Nov 2 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "Medeliza",
-                middlename: "S",
-                lastname: "Bagyuro",
-                house: "house 3",
-                updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "James",
-                middlename: "N/A",
-                lastname: "Yap",
-                house: "house 2",
-                updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            }
-        ]
+
+      async createData (){
+
+        let resident = this.users.find(o => o.id === this.editedItem.resident)
+        let house = this.editedItem.address
+
+        const HouseHold = Moralis.Object.extend("HouseHold");
+        const query = new Moralis.Query(HouseHold);
+        const household = new HouseHold();
+        query.equalTo("resident", resident);
+        const results = await query.find();
+        if(results.length == 0){
+          await household.save({
+            resident: resident,
+            address: house,
+            responsible: Moralis.User.current()
+          })
+          .then((household) => {
+
+            const Notification = Moralis.Object.extend("Notification");
+            const notification = new Notification();
+            notification.set("content", "Added a new household data");
+            notification.set("notifiedby", Moralis.User.current())
+            notification.save();
+
+
+            this.$store.dispatch('snackbar/setSnackbar', {
+              text : "Successfuly created",
+              color : 'primary'
+            });
+
+            return resident;
+
+          }, (error) => {
+
+            this.$store.dispatch('snackbar/setSnackbar', {
+              text : error.message,
+              color : 'error'
+            });
+
+          });
+        }else{
+          this.$store.dispatch('snackbar/setSnackbar', {
+              text : "This resident has its designated address",
+              color : 'error',
+              icon: 'mdi-alert-circle-outline'
+          });
+        }
+        
+      },
+
+      async loadResident (){
+        const Resident = Moralis.Object.extend("Resident");
+        const query = new Moralis.Query(Resident);
+        const results = await query.find();
+        this.users =  results.reverse();
+      },
+
+      async init (){
+        const HouseHold = Moralis.Object.extend("HouseHold");
+        const query = new Moralis.Query(HouseHold);
+        const results = await query.find();
+        this.household =  results.reverse();
+      },
+
+
+      async initSocket() {
+        let query = new Moralis.Query('HouseHold');
+        let subscription = await query.subscribe();
+
+
+        subscription.on('create', (object) => {
+          this.household.unshift(object);
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "New data appeared",
+            color : 'purple'
+          });
+        });
+
+        subscription.on('update', (object) => {
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : object.attributes.responsible.get('username') + " updated a data",
+            color : 'purple'
+          });
+          console.log(object);
+        });
+
+        subscription.on('delete', (object) => {
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Data with id of '" +object.id + "' has been deleted",
+            color : 'purple'
+          });
+          this.household.splice(this.editedIndex, 1)
+          this.closeDelete()
+        });
+
+      },
+
+      async updateData (){
+        let house = this.editedItem.address
+        const household = this.activeObj;
+        await household.save({
+          address: house,
+          responsible: Moralis.User.current()
+        })
+        .then((household) => {
+
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Successfuly updated",
+            color : 'warning'
+          });
+
+          return household;
+
+        }, (error) => {
+
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : error.message,
+            color : 'error'
+          });
+
+        });
+      },
+
+      async deleteData (obj){
+        const household = this.activeObj;
+        household.unset(obj);
+        await household.destroy();
+
+        this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Successfuly deleted",
+            color : 'primary'
+        });
       },
 
       editItem (item) {
-        this.editedIndex = this.resident.indexOf(item)
-        this.editedItem = Object.assign({}, item)
+        this.activeObj = item;
+        this.editedIndex = this.household.indexOf(item)
+        this.editedItem = Object.assign({}, item.attributes)
+        // this.editedItem.address = item.attributes.address
+        // this.editedItem.name = item.attributes.resident
         console.log(this.editedItem)
         this.dialog = true
       },
 
       deleteItem (item) {
-        this.editedIndex = this.resident.indexOf(item)
+        this.activeObj = item
+        this.editedIndex = this.household.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialogDelete = true
       },
 
       deleteItemConfirm () {
-        this.resident.splice(this.editedIndex, 1)
-        this.closeDelete()
+        this.deleteData(this.activeObj);
       },
 
       close () {
+        this.activeObj = []
         this.dialog = false
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
@@ -281,11 +395,11 @@
         })
       },
 
-      save () {
+      save (){
         if (this.editedIndex > -1) {
-          Object.assign(this.resident[this.editedIndex], this.editedItem)
+          this.updateData()
         } else {
-          this.resident.push(this.editedItem)
+          this.createData()
         }
         this.close()
       },
@@ -307,4 +421,4 @@
     border-radius: 12px;
     border: 1px solid rgba(209, 213, 219, 0.3);
 }
-</style>
+</style> 

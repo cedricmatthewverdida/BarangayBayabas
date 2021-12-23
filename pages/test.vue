@@ -1,58 +1,36 @@
 <template>
     <div>
-        {{loop_over_appereance}}
+
     </div>
 </template>
 
-
 <script>
+    import Moralis from 'moralis'
     export default {
-
-        data() {
-            return {
-                name: "Merson",
-                age: 21,
-                male: true,
-                appearance: [
-                    "Handsome",
-                    "Tall",
-                    "Cute",
-                ]
-            }
-        },
-
-
         methods: {
+            async create (){
+                const user = new Moralis.User();
+                user.set("username", "test");
+                user.set("password", "test");
+                user.set("email", "test@gmail.com");
+                user.set("role", "employee");
 
-            reveal_gender : function (){
-                return this.male ? "Lalake ako" : "Aye yoya";
-            }
-
-        },
-
-        computed: {
-            loop_over_appereance : function (){
-
-                for(let mersone = 0 ; mersone <= this.appearance.length; mersone++){
-                    console.log(this.appearance[mersone])
+                try {
+                    await user.signUp();
+                    // Hooray! Let them use the app now.
+                    } catch (error) {
+                    // Show the error message somewhere and let the user try again.
+                    alert("Error: " + error.code + " " + error.message);
                 }
-
             }
         },
 
-        filters:{
-
+        mounted() {
+            this.create()
         },
-
-        watch: {
-
-        },
-
-        mounted (){
-        
-        
-        }
     }
 </script>
 
+<style lang="scss" scoped>
 
+</style>

@@ -11,14 +11,16 @@
             :items="resident"
             sort-by="name"
             :search="search"
+            show-expand
           >
-            <template v-slot:item.created="{ item }">
-              {{ item.created | format_time }}
-            </template>
 
-            <template v-slot:item.updated="{ item }">
-              {{ item.updated | format_time }}
-            </template>
+
+
+          <template v-slot:expanded-item="{ headers, item }">
+            <td :colspan="headers.length">
+              Created: {{item.createdAt}}
+            </td>
+          </template>
 
             <template v-slot:top>
               <v-toolbar
@@ -41,14 +43,17 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
-                      dark
+                      
                       class="mb-2"
                       v-bind="attrs"
                       v-on="on"
                       depressed
                       rounded
+                      icon
                     >
-                      New Data
+                      <v-icon>
+                        mdi-plus
+                      </v-icon>
                     </v-btn>
                   </template>
                   <v-card>
@@ -99,6 +104,15 @@
                         label="Age"
                         >
                         </v-text-field>
+
+                        <v-select
+                        v-model="editedItem.sex"
+                        filled
+                        rounded
+                        :items="sex_status"
+                        label="Sex"
+                        >
+                        </v-select>
 
                         <v-select
                         v-model="editedItem.job"
@@ -180,7 +194,7 @@
             <template v-slot:no-data>
               <v-btn
                 color="primary"
-                @click="initialize"
+                @click="init()"
               >
                 Reset
               </v-btn>
@@ -191,9 +205,10 @@
 </template>
 <script>
   import moment from 'moment'
+  import Moralis from 'moralis';
   export default {
     data: () => ({
-
+      activeObj: [],
       dialog: false,
       dialogDelete: false,
 
@@ -220,17 +235,21 @@
         'Unregistered'
       ],
 
+      sex_status:[
+        'Male',
+        'Female'
+      ],
+
       headers: [
-        { text: 'FirstName', value: 'firstname' },
-        { text: 'MiddleName', value: 'middlename' },
-        { text: 'LastName', value: 'lastname' },
-        { text: 'Age', value: 'age' },
-        { text: 'Suffix', value: 'suffix' },
-        { text: 'Job', value: 'job' },
-        { text: 'Voter', value: 'voter' },
-        { text: 'Mortality', value: 'mortality' },
-        { text: 'Updated', value: 'updated' },
-        { text: 'Created', value: 'created' },
+        { text: 'FirstName', value: 'attributes.firstname' },
+        { text: 'MiddleName', value: 'attributes.middlename' },
+        { text: 'LastName', value: 'attributes.lastname' },
+        { text: 'Age', value: 'attributes.age' },
+        { text: 'Sex', value: 'attributes.sex' },
+        { text: 'Suffix', value: 'attributes.suffix' },
+        { text: 'Job', value: 'attributes.job' },
+        { text: 'Voter', value: 'attributes.voter' },
+        { text: 'Mortality', value: 'attributes.mortality' }, 
         { text: 'Actions', value: 'actions', sortable: false },
       ],
       resident: [],
@@ -264,114 +283,185 @@
       formTitle () {
         return this.editedIndex === -1 ? 'New Data' : 'Edit Data'
       },
+
+      
       
 
     },
 
     watch: {
+
       dialog (val) {
         val || this.close()
       },
+
       dialogDelete (val) {
         val || this.closeDelete()
       },
+
     },
 
-    created () {
-      this.initialize()
+    mounted () {
+
+      this.init(); //loads resident data
+
+      this.initSocket();
     },
 
     methods: {
-      initialize () {
 
-        this.resident = [
-            {
-                firstname: "Ana Rosani",
-                middlename: "O",
-                lastname: "Kagatan",
-                suffix: 'N/A',
-                age: "21",
-                sex: "Female",
-                job: 'Employed',
-                voter: "Registered",
-                mortality: 'Alive',
-                updated : 'Thu Oct 30 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "Merson",
-                middlename: "Opena",
-                lastname: "La Vactoria",
-                suffix: 'N/A',
-                age: "21",
-                sex: "Male",
-                job: 'Employed',
-                voter: "Registered",
-                mortality: 'Alive',
-                updated : 'Thu Nov 1 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "Hazel",
-                middlename: "L",
-                lastname: "Cagadas",
-                suffix: 'N/A',
-                age: "21",
-                sex: "Female",
-                job: 'Unemployed',
-                voter: "Registered",
-                mortality: 'Alive',
-                updated : 'Thu Nov 2 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "Medeliza",
-                middlename: "S",
-                lastname: "Bagyuro",
-                suffix: 'N/A',
-                age: "21",
-                sex: "Female",
-                job: 'Employed',
-                voter: "Unregistered",
-                mortality: 'Alive',
-                updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                firstname: "James",
-                middlename: "N/A",
-                lastname: "Yap",
-                suffix: 'N/A',
-                age: "21",
-                sex: "Male",
-                job: 'Unemployed',
-                voter: "Unregistered",
-                mortality: 'Alive',
-                updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            }
-        ]
+
+      async initSocket() {
+        let query = new Moralis.Query('Resident');
+        let subscription = await query.subscribe();
+
+
+        subscription.on('create', (object) => {
+          this.resident.unshift(object);
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "New data appeared",
+            color : 'purple'
+          });
+        });
+
+        subscription.on('update', (object) => {
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : object.attributes.responsible.get('username') + " updated a data",
+            color : 'purple'
+          });
+          console.log(object);
+        });
+
+        subscription.on('delete', (object) => {
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Data with id of '" +object.id + "' has been deleted",
+            color : 'purple'
+          });
+          this.resident.splice(this.editedIndex, 1)
+          this.closeDelete()
+        });
+
       },
 
+      async init (){
+        const Resident = Moralis.Object.extend("Resident");
+        const query = new Moralis.Query(Resident);
+        const results = await query.find();
+        this.resident =  results.reverse();
+      },
+
+
+      async createData (){
+        const Resident = Moralis.Object.extend("Resident");
+        const resident = new Resident();
+
+        await resident.save({
+          firstname: this.editedItem.firstname,
+          middlename: this.editedItem.middlename,
+          lastname: this.editedItem.lastname,
+          suffix: this.editedItem.suffix,
+          age: Number(this.editedItem.age),
+          sex: this.editedItem.sex,
+          job: this.editedItem.job,
+          voter: this.editedItem.voter,
+          mortality: this.editedItem.mortality,
+          responsible: Moralis.User.current()
+        })
+        .then((resident) => {
+
+
+
+          const Notification = Moralis.Object.extend("Notification");
+          const notification = new Notification();
+          notification.set("content", "Added a new resident data");
+          notification.set("notifiedby", Moralis.User.current())
+          notification.save();
+
+
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Successfuly created",
+            color : 'primary'
+          });
+
+          return resident;
+
+        }, (error) => {
+
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : error.message,
+            color : 'error'
+          });
+
+        });
+      },
+
+      async updateData (){
+        const resident = this.activeObj;
+        await resident.save({
+          firstname: this.editedItem.firstname,
+          middlename: this.editedItem.middlename,
+          lastname: this.editedItem.lastname,
+          suffix: this.editedItem.suffix,
+          age: Number(this.editedItem.age),
+          sex: this.editedItem.sex,
+          job: this.editedItem.job,
+          voter: this.editedItem.voter,
+          mortality: this.editedItem.mortality,
+          responsible: Moralis.User.current()
+        })
+        .then((resident) => {
+n 
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Successfuly updated",
+            color : 'warning'
+          });
+
+          return resident;
+
+        }, (error) => {
+
+          this.$store.dispatch('snackbar/setSnackbar', {
+            text : error.message,
+            color : 'error'
+          });
+
+        });
+      },
+
+      async deleteData (obj){
+        const resident = this.activeObj;
+        resident.unset(obj);
+        await resident.destroy();
+
+        this.$store.dispatch('snackbar/setSnackbar', {
+            text : "Successfuly deleted",
+            color : 'primary'
+        });
+      },
+
+       
+
       editItem (item) {
+        this.activeObj = item;
         this.editedIndex = this.resident.indexOf(item)
-        this.editedItem = Object.assign({}, item)
+        this.editedItem = Object.assign({}, item.attributes)
         console.log(this.editedItem)
         this.dialog = true
       },
 
       deleteItem (item) {
+        this.activeObj = item;
         this.editedIndex = this.resident.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialogDelete = true
       },
 
       deleteItemConfirm () {
-        this.resident.splice(this.editedIndex, 1)
-        this.closeDelete()
+        this.deleteData(this.activeObj)
       },
 
       close () {
+        this.activeObj = []
         this.dialog = false
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
@@ -389,18 +479,22 @@
 
       save () {
         if (this.editedIndex > -1) {
-          Object.assign(this.resident[this.editedIndex], this.editedItem)
+
+          this.updateData()
+
         } else {
-          this.resident.push(this.editedItem)
+          this.createData();
         }
         this.close()
       },
     },
 
     filters:{
+
+
       format_time : function (time) {
-        return moment(time).fromNow(); 
-      }
+        return moment(time).startOf('hour').fromNow(); 
+      },
     }
   }
 </script>
