@@ -16,6 +16,7 @@
               :class="{ 'on-hover': hover }"
               dark
               color="primary"
+              @click="setResident()"
             >
               
                 <v-card-title>
@@ -39,6 +40,7 @@
               :class="{ 'on-hover': hover }"
               dark
               color="pink"
+              @click="setOutofschool()"
             >
               
                 <v-card-title>
@@ -114,6 +116,7 @@
               dark
               color="brown"
               :loading="!initload"
+              @click="setMaleCount()"
             >
               
                 <v-card-title>
@@ -138,6 +141,7 @@
               dark
               color="black"
               :loading="!initload"
+              @click="setFemaleCount()"
             >
               
                 <v-card-title>
@@ -153,17 +157,22 @@
 
     </v-row>
 
-    <v-row>
+
+    <ResidentList v-if="loadchart == ''" class="my-3"/>
+
+    <v-row
+     v-if="loadchart != ''"
+    >
         <v-col>
             <v-card
             tile
             >
                 <v-card-title class="caption">
-                   Chart Preview
+                   Chart Preview&nbsp;<b>{{loadchart}}</b>
                 </v-card-title>
 
                 <v-card-text
-                  v-if="loadchart == 'Voter'"
+                  v-if="loadchart == 'Voters'"
                 >
                    <VoterChart
                       :samplerecord="samplerecord" :samplelabel="samplelabel"
@@ -176,6 +185,30 @@
                    <JobChart
                       :samplerecord="samplerecord" :samplelabel="samplelabel"
                     />
+                </v-card-text>
+
+                <v-card-text
+                  v-if="loadchart == 'Outofschool'"
+                >
+                  <OutOfSchool
+                    :samplerecord="samplerecord" :samplelabel="samplelabel"
+                  />
+                </v-card-text>
+
+                <v-card-text
+                  v-if="loadchart == 'Female'"
+                >
+                  <FemaleChart
+                    :samplerecord="samplerecord" :samplelabel="samplelabel"
+                  />
+                </v-card-text>
+
+                <v-card-text
+                  v-if="loadchart == 'Male'"
+                >
+                  <MaleChart
+                    :samplerecord="samplerecord" :samplelabel="samplelabel"
+                  />
                 </v-card-text>
 
             </v-card>
@@ -211,13 +244,21 @@
 </template>
 
 <script>
+import MaleChart from '~/components/MaleChart.vue';
+import FemaleChart from '~/components/FemaleChart.vue';
 import VoterChart from '~/components/VoterChart.vue';
 import JobChart from '~/components/JobChart.vue';
+import OutOfSchool from '~/components/OutofschoolChart.vue';
+import ResidentList from '~/components/Resident.vue';
 import Moralis from 'moralis';
   export default {
     components :{
         VoterChart,
-        JobChart
+        JobChart,
+        OutOfSchool,
+        FemaleChart,
+        MaleChart,
+        ResidentList
     },
     data: () => ({
       initload: false,
@@ -277,8 +318,12 @@ import Moralis from 'moralis';
 
     methods:{
 
+      setResident : function (){
+        this.loadchart = "";
+      },
+
       setVoter : function (){
-        this.loadchart = "Voter"
+        this.loadchart = "Voters"
         this.samplerecord = [this.voterCount[0].length,this.voterCount[1].length]
         this.samplelabel = ["Registered","Unregistered"]
       },
@@ -307,6 +352,18 @@ import Moralis from 'moralis';
         return result
       },
 
+      setFemaleCount : function (){
+        this.loadchart = "Female"
+        this.samplerecord = [this.genderCount[1].length,this.genderCount[0].length]
+        this.samplelabel = ["Female","Male"]
+      },
+
+      setMaleCount : function (){
+        this.loadchart = "Male"
+        this.samplerecord = [this.genderCount[0].length,this.genderCount[1].length]
+        this.samplelabel = ["Male","Female"]
+      },
+
       loadGenderCount : function (obj){
         let result = [];
         let male = obj.results.filter(item => item.attributes.sex == "Male");
@@ -326,6 +383,12 @@ import Moralis from 'moralis';
         this.voterCount = this.loadVoterCount(this.resident);
         this.employedCount = this.loadEmployedCount(this.resident);
         this.genderCount = this.loadGenderCount(this.resident);
+      },
+
+      setOutofschool : function (){
+        this.loadchart = "Outofschool"
+        this.samplerecord = [this.outofyouth.count,this.resident.count]
+        this.samplelabel = ["Out of school","Resident Records"]
       },
 
       async initOutOfSchoolYouth (){
