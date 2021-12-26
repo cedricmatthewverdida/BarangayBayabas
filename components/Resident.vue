@@ -9,7 +9,6 @@
     <v-card-text>
     <v-slide-group
       v-model="model"
-      class="pa-4"
       show-arrows
       :loading="!initload"
     >
