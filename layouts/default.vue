@@ -193,6 +193,7 @@ export default {
   components:{
     TheSnackbar
   },
+  middleware: 'loggedin' ,
   data () {
     return {
       drawer: false,
@@ -279,6 +280,21 @@ export default {
                 title: 'Import or Export Data',
               },
 
+              { 
+                action: 'mdi-account',
+                items: [
+                    { 
+                      title: 'Import',
+                      link: '/access/import'
+                    },
+                    { 
+                      title: 'Export',
+                      link: '/access/import'
+                    }
+                ],
+                title: 'Accounts',
+              },
+
       ],
       title: 'Barangay Carmen'
     }
@@ -306,13 +322,11 @@ export default {
     async logout() {
       await Moralis.User.logOut();
       this.authorize_loggin([]);
-      this.$router.push('/')
+      this.$router.push('/login')
     }
   },
 
   mounted(){
-      this.loggedin();
-
       this.getNotif();
   },
 }

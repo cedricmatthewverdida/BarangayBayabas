@@ -10,6 +10,7 @@
 <script>
     import TheSnackbar from '@/components/TheSnackbar.vue';
     export default {
+        middleware: 'is_loggedin' ,
         components:{
             TheSnackbar
         }

@@ -82,7 +82,8 @@
         computed: {
             loginCheck : function (){
                 return this.username != '' && this.password != ''  ? false : true
-            }
+            },
+            ...mapState(['user'])
         },
 
         methods: {
@@ -102,6 +103,8 @@
                         color : 'success',
                         icon: 'mdi-lock-open'
                     });
+
+                    this.$router.push('/')
                 } catch (error) {
                     
                     console.log(error.message)
@@ -122,7 +125,7 @@
         },
 
         mounted(){
-            this.loggedin();
+            this.loggedin()
         },
     }
 </script>

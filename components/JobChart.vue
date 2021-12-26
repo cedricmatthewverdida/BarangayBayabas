@@ -9,23 +9,20 @@
 <script>
     export default {
         props:{
-           samplerecord : Array
+           samplerecord : Array,
+           samplelabel : Array
         },
         data (){
             return {
 
                 barChartData: {
-                labels: [
-                    'Registered',
-                    'Unregistered',
-                    
-                    ],
+                    labels:this.samplelabel,
                     datasets: [
-                    {
-                        label: 'Length',
-                        data: this.samplerecord,
-                        backgroundColor: ['#3D5B59','#B5E5CF','#FCB5AC']
-                    }
+                        {
+                            label: 'Length',
+                            data: this.samplerecord,
+                            backgroundColor: ['#3D5B59','#B5E5CF','#FCB5AC']
+                        }
                     ]
                 },
                 barChartOptions: {
@@ -43,8 +40,9 @@
             }
         },
         mounted (){
-            if(this.samplerecord.length != 0){
+            if(this.samplerecord.length != 0 && this.samplelabel.length != 0){
                 this.barChartData.datasets[0].data = this.samplerecord;
+                this.barChartData.labels = this.samplelabel;
             }
         }
     }
