@@ -203,23 +203,23 @@ export default {
                 action: 'mdi-chart-bar',
                 items: [
                     { 
-                      title: 'Overview',
+                      title: '📈 Overview',
                       link: '/access/statistic/overview'
                     },
                     { 
-                      title: 'Resident',
+                      title: '🧑‍🤝‍🧑 Resident',
                       link: '/access/statistic/resident'
                     },
                     { 
-                      title: 'House Hold',
+                      title: '🏠 House Hold',
                       link: '/access/statistic/household'
                     },
                     { 
-                      title: 'Out of School Youth',
+                      title: '🎓 Out of School Youth',
                       link: '/access/statistic/outofschool'
                     },
                     { 
-                      title: 'Vaccine',
+                      title: '💉 Vaccine',
                       link: '/access/statistic/vaccine'
                     },
                     { 
