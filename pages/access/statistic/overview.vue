@@ -166,12 +166,14 @@
         <v-col>
             <v-card
             tile
+            height="430"
             >
                 <v-card-title class="caption">
                    Chart Preview&nbsp;<b>{{loadchart}}</b>
                 </v-card-title>
 
                 <v-card-text
+                  class="mt-10"
                   v-if="loadchart == 'Voters'"
                 >
                    <VoterChart
@@ -180,6 +182,7 @@
                 </v-card-text>
 
                 <v-card-text
+                  class="mt-10"
                   v-if="loadchart == 'Job'"
                 >
                    <JobChart
@@ -188,6 +191,7 @@
                 </v-card-text>
 
                 <v-card-text
+                  class="mt-10"
                   v-if="loadchart == 'Outofschool'"
                 >
                   <OutOfSchool
@@ -196,6 +200,7 @@
                 </v-card-text>
 
                 <v-card-text
+                  class="mt-10"
                   v-if="loadchart == 'Female'"
                 >
                   <FemaleChart
@@ -204,6 +209,7 @@
                 </v-card-text>
 
                 <v-card-text
+                  class="mt-10"
                   v-if="loadchart == 'Male'"
                 >
                   <MaleChart
@@ -218,23 +224,186 @@
             tile
             >
 
-            <v-card-text>
-                <v-list flat>
-                <v-subheader>Records</v-subheader>
-                <v-list-item-group
-                    color="primary"
+            <v-card-text v-if="loadchart == 'Voters'">
+                <v-subheader>Unregistered Voters</v-subheader>
+                <v-virtual-scroll
+                  bench="0"
+                  :items="record[0]"
+                  height="150"
+                  item-height="64"
                 >
+                  <template v-slot:default="{ item }">
                     <v-list-item
-                    v-for="(item, i) in record"
-                    :key="i"
+                    :key="item"
                     >
-                    <v-list-item-content>
-                        <v-list-item-title>{{item.name}}</v-list-item-title>
-                        <v-list-item-subtitle>{{item.voter}}</v-list-item-subtitle>
-                    </v-list-item-content>
+                      <v-list-item-content>
+                        <v-list-item-title>{{item.get('firstname')}} {{item.get('middlename')}} {{item.get('lastname')}}</v-list-item-title>
+                        <v-list-item-subtitle>{{item.get('voter')}}</v-list-item-subtitle>
+                      </v-list-item-content>
                     </v-list-item>
-                </v-list-item-group>
-                </v-list>
+                  </template>
+                </v-virtual-scroll>
+                <v-divider></v-divider>
+                <v-subheader>Unregistered Voters</v-subheader>
+                <v-virtual-scroll
+                  bench="0"
+                  :items="record[1]"
+                  height="150"
+                  item-height="64"
+                >
+                  <template v-slot:default="{ item }">
+                    <v-list-item
+                    :key="item"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>{{item.get('firstname')}} {{item.get('middlename')}} {{item.get('lastname')}}</v-list-item-title>
+                        <v-list-item-subtitle>{{item.get('voter')}}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </template>
+                </v-virtual-scroll>
+            </v-card-text>
+
+            <v-card-text v-if="loadchart == 'Job'">
+                <v-subheader>Employed Residents</v-subheader>
+                <v-virtual-scroll
+                  bench="0"
+                  :items="record[0]"
+                  height="150"
+                  item-height="64"
+                >
+                  <template v-slot:default="{ item }">
+                    <v-list-item
+                    :key="item"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>{{item.get('firstname')}} {{item.get('middlename')}} {{item.get('lastname')}}</v-list-item-title>
+                        <v-list-item-subtitle>{{item.get('job')}}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </template>
+                </v-virtual-scroll>
+                <v-divider></v-divider>
+                <v-subheader>Unemployed Residents</v-subheader>
+                <v-virtual-scroll
+                  bench="0"
+                  :items="record[1]"
+                  height="150"
+                  item-height="64"
+                >
+                  <template v-slot:default="{ item }">
+                    <v-list-item
+                    :key="item"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>{{item.get('firstname')}} {{item.get('middlename')}} {{item.get('lastname')}}</v-list-item-title>
+                        <v-list-item-subtitle>{{item.get('job')}}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </template>
+                </v-virtual-scroll>
+            </v-card-text>
+
+
+            <v-card-text v-if="loadchart == 'Female'">
+                <v-subheader>Female Residents</v-subheader>
+                <v-virtual-scroll
+                  bench="0"
+                  :items="record[0]"
+                  height="150"
+                  item-height="64"
+                >
+                  <template v-slot:default="{ item }">
+                    <v-list-item
+                    :key="item"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>{{item.get('firstname')}} {{item.get('middlename')}} {{item.get('lastname')}}</v-list-item-title>
+                        <v-list-item-subtitle>{{item.get('sex')}}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </template>
+                </v-virtual-scroll>
+                <v-divider></v-divider>
+                <v-subheader>Male Residents</v-subheader>
+                <v-virtual-scroll
+                  bench="0"
+                  :items="record[1]"
+                  height="150"
+                  item-height="64"
+                >
+                  <template v-slot:default="{ item }">
+                    <v-list-item
+                    :key="item"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>{{item.get('firstname')}} {{item.get('middlename')}} {{item.get('lastname')}}</v-list-item-title>
+                        <v-list-item-subtitle>{{item.get('sex')}}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </template>
+                </v-virtual-scroll>
+            </v-card-text>
+
+            <v-card-text v-if="loadchart == 'Male'">
+                <v-subheader>Male Residents</v-subheader>
+                <v-virtual-scroll
+                  bench="0"
+                  :items="record[0]"
+                  height="150"
+                  item-height="64"
+                >
+                  <template v-slot:default="{ item }">
+                    <v-list-item
+                    :key="item"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>{{item.get('firstname')}} {{item.get('middlename')}} {{item.get('lastname')}}</v-list-item-title>
+                        <v-list-item-subtitle>{{item.get('sex')}}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </template>
+                </v-virtual-scroll>
+                <v-divider></v-divider>
+                <v-subheader>Female Residents</v-subheader>
+                <v-virtual-scroll
+                  bench="0"
+                  :items="record[1]"
+                  height="150"
+                  item-height="64"
+                >
+                  <template v-slot:default="{ item }">
+                    <v-list-item
+                    :key="item"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>{{item.get('firstname')}} {{item.get('middlename')}} {{item.get('lastname')}}</v-list-item-title>
+                        <v-list-item-subtitle>{{item.get('sex')}}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </template>
+                </v-virtual-scroll>
+            </v-card-text>
+
+            <v-card-text v-if="loadchart == 'Outofschool'">
+                <v-subheader>Out of school residents</v-subheader>
+                <v-virtual-scroll
+                  bench="0"
+                  :items="record"
+                  height="350"
+                  item-height="64"
+                >
+                  <template v-slot:default="{ item }">
+                    <v-list-item
+                    :key="item"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>{{item.get('resident').get('firstname')}} {{item.get('resident').get('middlename')}} {{item.get('resident').get('lastname')}}</v-list-item-title>
+                        <!-- <v-list-item-subtitle>{{item}}</v-list-item-subtitle> -->
+                      </v-list-item-content>
+                    </v-list-item>
+                  </template>
+                </v-virtual-scroll>
             </v-card-text>
 
             </v-card>
@@ -275,44 +444,7 @@ import Moralis from 'moralis';
 
       loadchart: "",
 
-      record: [
-            {
-                id: 'XACeq',
-                name : "Ana Rosani O. Kagatan",
-                vaccine: "Vaccinated",
-                voter: "Registered",
-                covid: "Currently Diagnosed",
-                updated : 'Thu Oct 30 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                id: 'QWEFA',
-                name : "Merson O. La Vactoria",
-                vaccine: "Unvaccinated",
-                voter: "Registered",
-                covid: "Currently Diagnosed",
-                updated : 'Thu Nov 1 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                id: 'ZXCAW',
-                name : "Hazel L. Cagadas",
-                vaccine: "Vaccinated",
-                voter: "Registered",
-                covid: "Not Exposed",
-                updated : 'Thu Nov 2 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            },
-            {
-                id: 'EQTEQ',
-                name : "Medeliza S. Bagyuro",
-                vaccine: "Vaccinated",
-                voter: "Unregistered",
-                covid: "Recovered",
-                updated : 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)',
-                created: 'Thu Oct 28 2021 21:56:38 GMT+0800 (Philippine Standard Time)'
-            }
-      ],
+      record: [],
       transparent: 'rgba(255, 255, 255, 0)',
     }),
 
@@ -326,6 +458,8 @@ import Moralis from 'moralis';
         this.loadchart = "Voters"
         this.samplerecord = [this.voterCount[0].length,this.voterCount[1].length]
         this.samplelabel = ["Registered","Unregistered"]
+        this.record.push(this.voterCount[0])
+        this.record.push(this.voterCount[1])
       },
 
       loadVoterCount : function (obj){
@@ -338,9 +472,12 @@ import Moralis from 'moralis';
       },
 
       setJob : function (){
+        this.record = []
         this.loadchart = "Job"
         this.samplerecord = [this.employedCount[0].length,this.employedCount[1].length]
         this.samplelabel = ["Employed","Unemployed"]
+        this.record.push(this.employedCount[0])
+        this.record.push(this.employedCount[1])
       },
 
       loadEmployedCount : function (obj){
@@ -353,15 +490,21 @@ import Moralis from 'moralis';
       },
 
       setFemaleCount : function (){
+        this.record = []
         this.loadchart = "Female"
         this.samplerecord = [this.genderCount[1].length,this.genderCount[0].length]
         this.samplelabel = ["Female","Male"]
+        this.record.push(this.genderCount[1])
+        this.record.push(this.genderCount[0])
       },
 
       setMaleCount : function (){
+        this.record = []
         this.loadchart = "Male"
         this.samplerecord = [this.genderCount[0].length,this.genderCount[1].length]
         this.samplelabel = ["Male","Female"]
+        this.record.push(this.genderCount[0])
+        this.record.push(this.genderCount[1])
       },
 
       loadGenderCount : function (obj){
@@ -386,9 +529,11 @@ import Moralis from 'moralis';
       },
 
       setOutofschool : function (){
+        this.record = []
         this.loadchart = "Outofschool"
         this.samplerecord = [this.outofyouth.count,this.resident.count]
         this.samplelabel = ["Out of school","Resident Records"]
+        this.record = this.outofyouth.results;
       },
 
       async initOutOfSchoolYouth (){
@@ -408,3 +553,12 @@ import Moralis from 'moralis';
   }
 </script>
 
+<style lang="scss" scoped>
+.card {
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(255, 255, 255, 0.75);
+    border-radius: 12px;
+    border: 1px solid rgba(209, 213, 219, 0.3);
+}
+</style>
