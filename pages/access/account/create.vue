@@ -19,7 +19,7 @@
 
 
       <v-card-title class="caption">
-        Fill out required fields
+        👍Fill out required fields
       </v-card-title>
       
       <v-card-text class="pa-5">
@@ -92,7 +92,7 @@
 
 
       <v-card-title class="caption">
-        Fill out required fields
+        👍Fill out required fields
       </v-card-title>
       
       <v-card-text class="pa-5">
@@ -147,7 +147,7 @@
 
 
       <v-card-title class="caption">
-        Fill out required fields
+        👍Fill out required fields
       </v-card-title>
       
       <v-card-text class="pa-5">
@@ -198,7 +198,7 @@
 
 
       <v-card-title class="caption">
-        Fill out required fields
+        👍Fill out required fields
       </v-card-title>
       
       <v-card-text class="pa-5">

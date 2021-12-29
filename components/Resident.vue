@@ -28,7 +28,7 @@
           @click="toggle"
         >
 
-          <v-card-text class="d-flex flex-column">
+          <v-card-text class="d-flex flex-column caption">
               <span>Name: {{item.get('firstname')}} {{item.get('middlename')}} {{item.get('lastname')}} </span>
               <span>Suffix: {{item.get('suffix')}}</span>
               <span>Age: {{item.get('age')}}</span>

@@ -16,7 +16,7 @@
                     >
                         <template v-slot:activator>
                         <v-list-item-content>
-                            <v-list-item-title v-text="item.title"></v-list-item-title>
+                            <v-list-item-title v-text="item.title" ></v-list-item-title>
                         </v-list-item-content>
                         </template>
 
@@ -27,7 +27,7 @@
                             :to="child.link"
                         >
                         <v-list-item-content>
-                            <v-list-item-title v-text="child.title"></v-list-item-title>
+                            <v-list-item-title v-text="child.title" class="caption"></v-list-item-title>
                         </v-list-item-content>
                         </v-list-item>
                     </v-list-group>
@@ -44,22 +44,26 @@
     <v-app-bar
       clipped-left
       app
-      color="#387C6D"
+      color="#333333"
       flat
       dark
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       
-      <v-toolbar-title v-text="title" />
+      <v-toolbar-title v-text="title" class="overline" />
       
 
       <v-spacer></v-spacer>
 
       
         <v-menu
-          content-class="elevation-1"
           v-if="user.length != 0"
-          offset-x>
+
+          transition="slide-y-transition"
+          bottom
+          content-class="my-menu"
+          
+          >
           <template v-slot:activator="{ on, attrs }">
             <v-btn
               icon
@@ -117,13 +121,17 @@
       
 
       <v-menu
-      content-class="elevation-1"
       v-if="user.length != 0"
-      offset-x>
+      transition="slide-y-transition"
+      bottom
+      content-class="my-menu"
+      >
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           depressed
-          text
+          fab
+          small
+          color="white"
           rounded
           v-bind="attrs"
           v-on="on"
@@ -331,3 +339,29 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;700&family=Permanent+Marker&display=swap');
+.logofont{
+font-family: 'Kalam', cursive;
+font-family: 'Permanent Marker', cursive;
+}
+
+.my-menu {
+  margin-top: 60px;
+  contain: initial;
+  overflow: visible;
+}
+.my-menu::before {
+  position: absolute;
+  content: "";
+  top: 0;
+  right: 10px;
+  transform: translateY(-100%);
+  width: 10px; 
+  height: 13px; 
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 13px solid #fff;
+}
+</style>

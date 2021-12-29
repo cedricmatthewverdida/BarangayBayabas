@@ -6,7 +6,7 @@
         width="500"
         class="card pa-7"
         >
-            <v-card-title class="mt-5 d-flex justify-center">
+            <v-card-title class="mt-5 d-flex justify-center logofont">
                 Barangay Carmen
             </v-card-title>
 
@@ -144,5 +144,11 @@
   align-items: center;
   text-align: center;
   min-height: 100vh;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;700&family=Permanent+Marker&display=swap');
+.logofont{
+font-family: 'Kalam', cursive;
+font-family: 'Permanent Marker', cursive;
 }
 </style>
