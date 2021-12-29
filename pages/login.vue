@@ -104,7 +104,7 @@
                         icon: 'mdi-lock-open'
                     });
 
-                    this.$router.push('/')
+                    this.$router.push('/access/statistic/overview')
                 } catch (error) {
                     
                     console.log(error.message)

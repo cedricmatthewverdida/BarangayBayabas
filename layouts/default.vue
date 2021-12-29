@@ -124,7 +124,7 @@
       v-if="user.length != 0"
       transition="slide-y-transition"
       bottom
-      content-class="my-menu"
+      content-class="my-menu elevation-1"
       >
       <template v-slot:activator="{ on, attrs }">
         <v-btn
@@ -147,16 +147,38 @@
           </v-avatar>
         </v-btn>
       </template>
-      <v-list>
 
-        <v-list-item>
-          <v-list-item-title>{{user.attributes.firstname}}</v-list-item-title>
-        </v-list-item>
 
-        <v-list-item @click="logout()">
-          <v-list-item-title>Logout</v-list-item-title>
-        </v-list-item>
-      </v-list>
+
+      <v-card>
+          <v-list-item-content class="justify-center">
+            <div class="mx-auto text-center">
+              <v-avatar
+              size="30"
+              >
+                <img
+                :lazy-src="user.attributes.profilepic._url"
+                :src="user.attributes.profilepic._url"
+                >
+              </v-avatar>
+              <h3>{{user.attributes.firstname}}</h3>
+              <p class="text-caption mt-1">
+                {{user.attributes.email}}
+              </p>
+              <v-divider class="my-3"></v-divider>
+              <span class="overline">{{user.attributes.role}}</span>
+              <v-divider class="my-3"></v-divider>
+              <v-btn
+                depressed
+                rounded
+                text
+                @click="logout()"
+              >
+                Disconnect Account
+              </v-btn>
+            </div>
+          </v-list-item-content>
+      </v-card>
     </v-menu>
 
     </v-app-bar>
