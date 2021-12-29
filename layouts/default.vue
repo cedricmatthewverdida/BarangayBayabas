@@ -186,7 +186,7 @@
 
 
 <script>
-import { mapActions,mapState } from 'vuex'
+import { mapActions,mapState,mapMutations } from 'vuex'
 import TheSnackbar from '@/components/TheSnackbar.vue';
 import Moralis from 'moralis'
 export default {
@@ -284,12 +284,12 @@ export default {
                 action: 'mdi-account',
                 items: [
                     { 
-                      title: 'Import',
-                      link: '/access/import'
+                      title: 'Create Account',
+                      link: '/access/account/create'
                     },
                     { 
-                      title: 'Export',
-                      link: '/access/import'
+                      title: 'Manage Account',
+                      link: '/access/account/manage'
                     }
                 ],
                 title: 'Accounts',
@@ -311,7 +311,7 @@ export default {
   methods:{
 
     ...mapActions(['loggedin']),
-
+    ...mapMutations(['authorize_loggin']),
 
     async getNotif (){
         const response = await Moralis.Cloud.run("getNotification");
