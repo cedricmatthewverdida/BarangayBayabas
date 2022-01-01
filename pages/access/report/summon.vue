@@ -3,22 +3,26 @@
     class="card"
     outlined
     elevation="1"
+    
     >
         <v-card-text
         class="container">
           <v-data-table
             :headers="headers"
-            :items="outofschool"
+            :items="summon"
             sort-by="name"
             :search="search"
+            show-expand
           >
-            <template v-slot:item.created="{ item }">
-              {{ item.created | format_time }}
+          <template v-slot:item.createdAt="{ item }">
+              {{ item.createdAt | format_time }}
             </template>
 
-            <template v-slot:item.updated="{ item }">
-              {{ item.updated | format_time }}
-            </template>
+          <template v-slot:expanded-item="{ headers, item }">
+            <td :colspan="headers.length">
+              Respondent: {{item.attributes.respondent.attributes.firstname}} {{item.attributes.respondent.attributes.middlename}} {{item.attributes.respondent.attributes.lastname}}
+            </td>
+          </template>
 
             <template v-slot:top>
               <v-toolbar
@@ -62,11 +66,11 @@
                       <v-container>
 
                         <v-select
-                        v-model="editedItem.resident"
+                        v-model="editedItem.complainant"
                         filled
                         rounded
                         :items="users"
-                        label="Name"
+                        label="Complainant"
                         item-value="id"
                         item-text="name"
                         :disabled="editedIndex != -1"
@@ -81,6 +85,23 @@
                           </template>
 
                         </v-select>
+
+                      
+                        <v-text-field
+                          v-model="editedItem.complain"
+                          filled
+                          rounded
+                          label="Complain"
+                        />
+
+                       <v-combobox
+                        v-model="editedItem.status"
+                        filled
+                        rounded
+                        :items="status"
+                        label="Status"
+                        >
+                        </v-combobox>
 
                       </v-container>
                     </v-card-text>
@@ -118,13 +139,13 @@
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <!-- <v-icon
+              <v-icon
                 small
                 class="mr-2"
                 @click="editItem(item)"
               >
                 mdi-pencil
-              </v-icon> -->
+              </v-icon>
               <v-icon
                 small
                 @click="deleteItem(item)"
@@ -153,29 +174,46 @@
       dialog: false,
       dialogDelete: false,
 
+      dupplicate: false,
+
       search: '',
 
       users:[],
 
       activeObj: [],
 
+      status:[
+        'Inprocess',
+        'Proccess',
+        'Done',
+        'Reject',
+      ],
+
+
 
       headers: [
-        { text: 'FirstName', value: 'attributes.resident.attributes.firstname' },
-        { text: 'MiddleName', value: 'attributes.resident.attributes.middlename' },
-        { text: 'LastName', value: 'attributes.resident.attributes.lastname' },
+        { text: 'FirstName', value: 'attributes.complainant.attributes.firstname' },
+        { text: 'MiddleName', value: 'attributes.complainant.attributes.middlename' },
+        { text: 'LastName', value: 'attributes.complainant.attributes.lastname' },
+        { text: 'Complain', value: 'attributes.complain' },
+        { text: 'Date', value: 'createdAt' },
+        { text: 'Status', value: 'attributes.status' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
 
-      outofschool: [],
+      summon: [],
       editedIndex: -1,
 
       editedItem: {
-        resident: '',
+        complainant: '',
+        complain: '',
+        status: ''
       },
 
       defaultItem: {
-        resident: '',
+        complainant: '',
+        complain: '',
+        status: ''
       },
 
     }),
@@ -203,6 +241,8 @@
       this.init()
 
       this.loadResident()
+
+
       this.initSocket()
 
     },
@@ -211,51 +251,98 @@
 
 
       async createData (){
-
-        let resident = this.users.find(o => o.id === this.editedItem.resident)
-
-        const Outofschool = Moralis.Object.extend("Outofschool");
-        const query = new Moralis.Query(Outofschool);
-        const outofschool = new Outofschool();
-        query.equalTo("resident", resident);
-        const results = await query.find();
-        if(results.length == 0){
-          await outofschool.save({
-            resident: resident,
-            responsible: Moralis.User.current()
-          })
-          .then((outofschool) => {
-
-            const Notification = Moralis.Object.extend("Notification");
-            const notification = new Notification();
-            notification.set("content", "Added a new outofschool data");
-            notification.set("notifiedby", Moralis.User.current())
-            notification.save();
-
-
-            this.$store.dispatch('snackbar/setSnackbar', {
-              text : "Successfuly created",
-              color : 'primary'
-            });
-
-            return resident;
-
-          }, (error) => {
-
-            this.$store.dispatch('snackbar/setSnackbar', {
-              text : error.message,
-              color : 'error'
-            });
-
-          });
-        }else{
-          this.$store.dispatch('snackbar/setSnackbar', {
-              text : "This resident is already recorded",
-              color : 'error',
-              icon: 'mdi-alert-circle-outline'
-          });
-        }
         
+        this.dupplicate = false; //Initialize Search in DB
+
+        let resident = this.users.find(o => o.id === this.editedItem.complainant)
+        let status = this.editedItem.status
+        let complain = this.editedItem.complain
+        let respondent = Moralis.User.current()
+
+        const Summon = Moralis.Object.extend("Summon");
+        const query = new Moralis.Query(Summon);
+        const summon = new Summon();
+        query.equalTo("complainant", resident);
+        const results = await query.find();
+        console.log(results);
+        if(results.length != 0){
+
+          for(const find in results){
+            if(results[find].attributes.status != "Done"){
+              this.dupplicate = true;
+              break;
+            }
+          }
+
+          if(this.dupplicate == false){
+            await summon.save({
+              complainant: resident,
+              complain: complain,
+              respondent: respondent,
+              status: status
+            })
+            .then((success) => {
+
+              const Notification = Moralis.Object.extend("Notification");
+              const notification = new Notification();
+              notification.set("content", "Added a summon data");
+              notification.set("notifiedby", Moralis.User.current())
+              notification.save();
+
+
+              this.$store.dispatch('snackbar/setSnackbar', {
+                text : "Successfuly created",
+                color : 'primary'
+              });
+
+              return success;
+
+            }, (error) => {
+
+              this.$store.dispatch('snackbar/setSnackbar', {
+                text : error.message,
+                color : 'error'
+              });
+            });
+          }else{
+            this.$store.dispatch('snackbar/setSnackbar', {
+                text : "Cannot add data due to pending summon",
+                color : 'error',
+                icon: 'mdi-alert-circle-outline'
+            });
+          }
+
+        }else{
+          await summon.save({
+              complainant: resident,
+              complain: complain,
+              respondent: respondent,
+              status: status
+            })
+            .then((success) => {
+
+              const Notification = Moralis.Object.extend("Notification");
+              const notification = new Notification();
+              notification.set("content", "Added a summon data");
+              notification.set("notifiedby", Moralis.User.current())
+              notification.save();
+
+
+              this.$store.dispatch('snackbar/setSnackbar', {
+                text : "Successfuly created",
+                color : 'primary'
+              });
+
+              return success;
+
+            }, (error) => {
+
+              this.$store.dispatch('snackbar/setSnackbar', {
+                text : error.message,
+                color : 'error'
+              });
+            });
+        }
       },
 
       async loadResident (){
@@ -266,20 +353,18 @@
       },
 
       async init (){
-        const OutofSchool = Moralis.Object.extend("Outofschool");
-        const query = new Moralis.Query(OutofSchool);
-        const results = await query.find();
-        this.outofschool =  results.reverse();
+        const response = await Moralis.Cloud.run("getSummon");
+        this.summon =  response.reverse();
       },
 
 
       async initSocket() {
-        let query = new Moralis.Query('Outofschool');
+        let query = new Moralis.Query('Summon');
         let subscription = await query.subscribe();
 
 
         subscription.on('create', (object) => {
-          this.outofschool.unshift(object);
+          this.summon.unshift(object);
           this.$store.dispatch('snackbar/setSnackbar', {
             text : "New data appeared",
             color : 'purple'
@@ -299,27 +384,32 @@
             text : "Data with id of '" +object.id + "' has been deleted",
             color : 'purple'
           });
-          this.outofschool.splice(this.editedIndex, 1)
+          this.summon.splice(this.editedIndex, 1)
           this.closeDelete()
         });
 
       },
 
       async updateData (){
-        let house = this.editedItem.address
-        const household = this.activeObj;
-        await household.save({
-          address: house,
-          responsible: Moralis.User.current()
+
+        let status = this.editedItem.status
+        let complain = this.editedItem.complain
+        let respondent = Moralis.User.current()
+
+        const ActiveObj = this.activeObj;
+        await ActiveObj.save({
+          complain: complain,
+          respondent: respondent,
+          status: status
         })
-        .then((household) => {
+        .then((success) => {
 
           this.$store.dispatch('snackbar/setSnackbar', {
             text : "Successfuly updated",
             color : 'warning'
           });
 
-          return household;
+          return success;
 
         }, (error) => {
 
@@ -332,9 +422,9 @@
       },
 
       async deleteData (obj){
-        const household = this.activeObj;
-        household.unset(obj);
-        await household.destroy();
+        const Vaccine = this.activeObj;
+        Vaccine.unset(obj);
+        await Vaccine.destroy();
 
         this.$store.dispatch('snackbar/setSnackbar', {
             text : "Successfuly deleted",
@@ -344,17 +434,15 @@
 
       editItem (item) {
         this.activeObj = item;
-        this.editedIndex = this.outofschool.indexOf(item)
+        this.editedIndex = this.summon.indexOf(item)
         this.editedItem = Object.assign({}, item.attributes)
-        // this.editedItem.address = item.attributes.address
-        // this.editedItem.name = item.attributes.resident
         console.log(this.editedItem)
         this.dialog = true
       },
 
       deleteItem (item) {
         this.activeObj = item
-        this.editedIndex = this.outofschool.indexOf(item)
+        this.editedIndex = this.summon.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialogDelete = true
       },
@@ -392,7 +480,7 @@
 
     filters:{
       format_time : function (time) {
-        return moment(time).fromNow(); 
+        return moment(time).format('lll');;
       }
     }
   }

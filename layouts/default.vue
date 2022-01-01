@@ -261,26 +261,22 @@ export default {
               },
 
               { 
-                action: 'mdi-emoticon-angry-outline',
+                action: 'mdi-note-text-outline',
                 items: [
                     { 
-                      title: 'Summon',
-                      link: '/access/complain/summon'
+                      title: '🚨 Summon',
+                      link: '/access/report/summon'
                     },
                     { 
-                      title: 'Blotter',
-                      link: '/access/blotter'
+                      title: '📑 Blotter',
+                      link: '/access/report/blotter'
                     },
                     { 
-                      title: 'Lupon',
-                      link: '/access/lupon'
-                    },
-                    { 
-                      title: 'Incident',
-                      link: '/access/incident'
+                      title: '🔥 Incident',
+                      link: '/access/report/incident'
                     },
                 ],
-                title: 'Complain',
+                title: 'Report',
               },
 
 

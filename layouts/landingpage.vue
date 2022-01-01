@@ -1,29 +1,24 @@
 <template>
-    <v-app>
+    <v-app class="backgroundColor">
         <v-main>
             <Nuxt />
         </v-main>
-        <TheSnackbar />
     </v-app>
 </template>
 
-<script>
-    import TheSnackbar from '@/components/TheSnackbar.vue';
-    export default {
-        middleware: 'is_loggedin' ,
-        components:{
-            TheSnackbar
-        }
-    }
-</script>
+
 
 <style lang="scss" scoped>
 .wallpaper {
-    background-image: url('~/assets/background.jpg');
+    background-image: url('~/assets/cdo.jpg');
     background-repeat:no-repeat;
     background-position: center;
     background-size: cover;
 }
 
+
+.backgroundColor{
+    background-color: #001e26;
+}
 
 </style>
