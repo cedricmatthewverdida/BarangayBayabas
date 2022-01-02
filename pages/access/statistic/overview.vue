@@ -1,5 +1,5 @@
 <template>
-  <v-container class="pa-4">
+  <div>
     <v-row
       class="fill-height"
       align="center"
@@ -158,7 +158,7 @@
     </v-row>
 
 
-    <ResidentList v-if="loadchart == ''" class="my-3"/>
+    <ResidentList v-if="loadchart == ''" class="my-15"/>
 
     <v-row
      v-if="loadchart != ''"
@@ -409,7 +409,7 @@
             </v-card>
         </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>

@@ -1,13 +1,6 @@
 <template>
-  <v-card
-    class="mx-auto container"
-    shaped
-  >
-    <v-card-title class="caption">
-        Resident List
-    </v-card-title>
-    
-    <v-card-text>
+  <div>
+    <h1 class="mb-2">Resident</h1>
     <v-slide-group
       v-model="model"
       show-arrows
@@ -23,11 +16,10 @@
           class="ma-2 card"
           elevation="1"
           height="220"
-          width="300"
+          width="200"
           outlined
           @click="toggle"
         >
-
           <v-card-text class="d-flex flex-column caption">
               <span>Name: {{item.get('firstname')}} {{item.get('middlename')}} {{item.get('lastname')}} </span>
               <span>Suffix: {{item.get('suffix')}}</span>
@@ -41,8 +33,7 @@
         </v-card>
       </v-slide-item>
     </v-slide-group>
-    </v-card-text>
-  </v-card>
+  </div>
 </template>
 
 
