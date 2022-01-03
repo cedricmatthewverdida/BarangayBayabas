@@ -92,7 +92,7 @@
                 </v-icon>
             </v-btn>
           </template>
-          <v-list>
+          <v-list v-if="notification.length != 0">
 
             <v-list-item
               v-for="(notif,key) in notification.results"
@@ -292,18 +292,14 @@ export default {
               },
 
               { 
-                action: 'mdi-swap-vertical-bold',
+                action: 'mdi-export',
                 items: [
                     { 
-                      title: 'Import',
-                      link: '/access/import'
-                    },
-                    { 
-                      title: 'Export',
-                      link: '/access/import'
+                      title: 'Manage',
+                      link: '/access/data/export'
                     }
                 ],
-                title: 'Import or Export Data',
+                title: 'Export Data',
               },
 
               { 
