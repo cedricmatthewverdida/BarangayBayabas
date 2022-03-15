@@ -164,6 +164,7 @@
         { text: 'FirstName', value: 'attributes.resident.attributes.firstname' },
         { text: 'MiddleName', value: 'attributes.resident.attributes.middlename' },
         { text: 'LastName', value: 'attributes.resident.attributes.lastname' },
+        { text: 'Age', value: 'attributes.resident.attributes.age' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
 

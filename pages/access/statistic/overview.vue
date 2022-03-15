@@ -121,7 +121,7 @@
               
                 <v-card-title>
                   <v-icon dark class="mr-2">mdi-human-male</v-icon>
-                  Male
+                  Gender
                 </v-card-title>
                 <v-card-subtitle v-if="initload">
                   Total Male: {{genderCount[0].length}}
@@ -130,30 +130,6 @@
           </v-hover>
         </v-col>
 
-        <v-col
-          cols="12"
-          md="4"
-        >
-          <v-hover v-slot="{ hover }">
-            <v-card
-              :elevation="hover ? 12 : 1"
-              :class="{ 'on-hover': hover }"
-              dark
-              color="black"
-              :loading="!initload"
-              @click="setFemaleCount()"
-            >
-              
-                <v-card-title>
-                  <v-icon dark class="mr-2">mdi-human-female</v-icon>
-                  Female
-                </v-card-title>
-                <v-card-subtitle v-if="initload">
-                  Total Female: {{genderCount[1].length}}
-                </v-card-subtitle>
-            </v-card>
-          </v-hover>
-        </v-col>
 
     </v-row>
 
@@ -195,15 +171,6 @@
                   v-if="loadchart == 'Outofschool'"
                 >
                   <OutOfSchool
-                    :samplerecord="samplerecord" :samplelabel="samplelabel"
-                  />
-                </v-card-text>
-
-                <v-card-text
-                  class="mt-10"
-                  v-if="loadchart == 'Female'"
-                >
-                  <FemaleChart
                     :samplerecord="samplerecord" :samplelabel="samplelabel"
                   />
                 </v-card-text>

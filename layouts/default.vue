@@ -278,19 +278,6 @@ export default {
                 ],
                 title: 'Report',
               },
-
-
-              { 
-                action: 'mdi-database',
-                items: [
-                    { 
-                      title: 'List',
-                      link: '/access/inventory'
-                    }
-                ],
-                title: 'Inventory',
-              },
-
               { 
                 action: 'mdi-export',
                 items: [

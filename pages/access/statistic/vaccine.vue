@@ -81,6 +81,7 @@
                         rounded
                         :items="vaccine_status"
                         label="Vaccine"
+                        persistent-hint
                         >
                         </v-combobox>
 
@@ -442,6 +443,7 @@
           this.updateData()
         } else {
           this.createData()
+          console.log(this.editedItem.vaccine)
         }
         this.close()
       },

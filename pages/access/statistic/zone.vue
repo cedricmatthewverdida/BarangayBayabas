@@ -75,14 +75,14 @@
 
                         </v-select>
 
-                       <v-combobox
+                       <v-select
                         v-model="editedItem.zone"
                         filled
                         rounded
                         :items="zone_list"
                         label="Zone"
                         >
-                        </v-combobox>
+                        </v-select>
 
                       </v-container>
                     </v-card-text>
@@ -165,7 +165,16 @@
         'Zone 1',
         'Zone 2',
         'Zone 3',
-        'Zone 4'
+        'Zone 4',
+        'Zone 5',
+        'Zone 6',
+        'Zone 7',
+        'Zone 8',
+        'Zone 9',
+        'Zone 10',
+        'Zone 11',
+        'Zone 12',
+        'Zone 13',
       ],
 
 
