@@ -192,7 +192,7 @@
             >
 
             <v-card-text v-if="loadchart == 'Voters'">
-                <v-subheader>Unregistered Voters</v-subheader>
+                <v-subheader>Registered Voters</v-subheader>
                 <v-virtual-scroll
                   bench="0"
                   :items="record[0]"
