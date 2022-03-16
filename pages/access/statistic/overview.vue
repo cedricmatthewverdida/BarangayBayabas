@@ -96,7 +96,7 @@
               
                 <v-card-title>
                   <v-icon dark class="mr-2">mdi-briefcase-variant</v-icon>
-                  Employed
+                  Employed / Unemployed
                 </v-card-title>
                 <v-card-subtitle v-if="initload">
                   Total Employed Resident: {{employedCount[0].length}} out of {{employedCount[1].length}}
