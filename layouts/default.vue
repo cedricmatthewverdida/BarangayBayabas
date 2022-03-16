@@ -275,6 +275,10 @@ export default {
                       title: '🔥 Incident',
                       link: '/access/report/incident'
                     },
+                    { 
+                      title: '⚖ Lupon',
+                      link: '/access/report/lupon'
+                    },
                 ],
                 title: 'Report',
               },
