@@ -141,6 +141,32 @@
                         >
                         </v-select>
 
+                        <v-select
+                        v-model="editedItem.residence"
+                        filled
+                        rounded
+                        :items="residence_status"
+                        label="Residence Status"
+                        >
+                        </v-select>
+
+                        <v-select
+                        v-model="editedItem.civil_status"
+                        filled
+                        rounded
+                        :items="civil_status"
+                        label="Civil Status"
+                        >
+                        </v-select>
+
+                        <v-text-field
+                        v-model="editedItem.birthplace"
+                        filled
+                        rounded
+                        label="birthplace"
+                        >
+                        </v-text-field>
+
                       </v-container>
                     </v-card-text>
 
@@ -240,6 +266,20 @@
         'Female'
       ],
 
+      residence_status:[
+        'zone-1',
+        'zone-2',
+        'zone-3'
+      ],
+
+      civil_status:[
+        'single',
+        'married',
+        'divorced',
+        'widowed'
+        
+      ],
+
       headers: [
         { text: 'FirstName', value: 'attributes.firstname' },
         { text: 'MiddleName', value: 'attributes.middlename' },
@@ -248,8 +288,11 @@
         { text: 'Sex', value: 'attributes.sex' },
         { text: 'Suffix', value: 'attributes.suffix' },
         { text: 'Job', value: 'attributes.job' },
+        { text: 'civil status', value: 'attributes.civil_status' },
+        { text: 'residence', value: 'attributes.resident' },
+        { text: 'birthplace', value: 'attributes.birthplace' },
         { text: 'Voter', value: 'attributes.voter' },
-        { text: 'Mortality', value: 'attributes.mortality' }, 
+        { text: 'Status', value: 'attributes.mortality' }, 
         { text: 'Actions', value: 'actions', sortable: false },
       ],
       resident: [],
@@ -262,6 +305,10 @@
         age: '',
         sex: '',
         job: '',
+        
+        civil_status:'',
+        residence:'',
+        birthplace:'',
         voter: '',
         mortality: ''
       },
@@ -273,6 +320,9 @@
         age: '',
         sex: '',
         job: '',
+        civil_status:'',
+        residence:'',
+        birthplace:'',
         voter: '',
         mortality: ''
       },
@@ -365,6 +415,9 @@
           job: this.editedItem.job,
           voter: this.editedItem.voter,
           mortality: this.editedItem.mortality,
+          birthplace: this.editedItem.birthplace,
+          civil_status: this.editedItem.civil_status,
+          resident : this.editedItem.residence,
           responsible: Moralis.User.current()
         })
         .then((resident) => {
@@ -407,6 +460,10 @@
           job: this.editedItem.job,
           voter: this.editedItem.voter,
           mortality: this.editedItem.mortality,
+          
+          birthplace: this.editedItem.birthplace,
+          civil_status: this.editedItem.civil_status,
+          resident : this.editedItem.residence,
           responsible: Moralis.User.current()
         })
         .then((resident) => {
