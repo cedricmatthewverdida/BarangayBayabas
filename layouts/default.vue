@@ -303,6 +303,11 @@ export default {
                     { 
                       title: 'Manage Account',
                       link: '/access/account/manage'
+                    },
+
+                    { 
+                      title: 'Recent Login',
+                      link: '/access/account/logger'
                     }
                 ],
                 title: 'Accounts',
