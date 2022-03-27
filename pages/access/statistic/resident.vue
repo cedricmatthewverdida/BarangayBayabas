@@ -154,16 +154,7 @@
                         filled
                         rounded
                         :items="mortality_status"
-                        label="Mortality Status"
-                        >
-                        </v-select>
-
-                        <v-select
-                        v-model="editedItem.residence"
-                        filled
-                        rounded
-                        :items="residence_status"
-                        label="Residence Status"
+                        label="Status"
                         >
                         </v-select>
 
@@ -275,12 +266,6 @@
         'Female'
       ],
 
-      residence_status:[
-        'zone-1',
-        'zone-2',
-        'zone-3'
-      ],
-
       civil_status:[
         'single',
         'married',
@@ -298,7 +283,6 @@
         { text: 'Suffix', value: 'attributes.suffix' },
         { text: 'Job', value: 'attributes.job' },
         { text: 'civil status', value: 'attributes.civil_status' },
-        { text: 'residence', value: 'attributes.resident' },
         { text: 'birthplace', value: 'attributes.birthplace' },
         { text: 'birthday', value: 'attributes.birthday' },
         { text: 'Voter', value: 'attributes.voter' },
@@ -317,7 +301,6 @@
         job: '',
         
         civil_status:'',
-        residence:'',
         birthplace:'',
         birthday: '',
         voter: '',
@@ -332,7 +315,6 @@
         sex: '',
         job: '',
         civil_status:'',
-        residence:'',
         birthplace:'',
         birthday: '',
         voter: '',
@@ -427,7 +409,6 @@
           birthplace: this.editedItem.birthplace,
           birthday: this.editedItem.birthday,
           civil_status: this.editedItem.civil_status,
-          resident : this.editedItem.residence,
           responsible: Moralis.User.current()
         })
         .then((resident) => {
@@ -473,7 +454,6 @@
           birthplace: this.editedItem.birthplace,
           birthday: this.editedItem.birthday,
           civil_status: this.editedItem.civil_status,
-          resident : this.editedItem.residence,
           responsible: Moralis.User.current()
         })
         .then((resident) => {
