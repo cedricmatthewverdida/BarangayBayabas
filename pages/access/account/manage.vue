@@ -1,4 +1,9 @@
 <template>
+  <div>
+
+    <v-overlay :value="user.get('role') != 'Admin' ? true : false">
+      You dont have access
+    </v-overlay>
     <v-card
     class="card"
     outlined
@@ -169,10 +174,12 @@
           </v-data-table>
         </v-card-text>
     </v-card>
+  </div>
 </template>
 <script>
   import moment from 'moment'
   import Moralis from 'moralis';
+  import { mapState } from 'vuex'
   export default {
     data: () => ({
       activeObj: [],
@@ -222,10 +229,15 @@
           'Lupon',
           'Incident',
           'Admin'
-      ]
+      ],
     }),
 
+
+    
+
     computed: {
+      
+      ...mapState(['user']),
 
       formTitle () {
         return this.editedIndex === -1 ? 'New Data' : 'Edit Data'
@@ -249,7 +261,6 @@
     },
 
     mounted () {
-
       this.init(); //loads resident data
 
       this.initSocket();

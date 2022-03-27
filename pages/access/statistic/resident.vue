@@ -114,6 +114,23 @@
                         >
                         </v-select>
 
+                        <v-text-field
+                        v-model="editedItem.birthday"
+                        filled
+                        rounded
+                        label="Birthday"
+                        type="date"
+                        >
+                        </v-text-field>
+
+                        <v-text-field
+                        v-model="editedItem.birthplace"
+                        filled
+                        rounded
+                        label="Birthplace"
+                        >
+                        </v-text-field>
+
                         <v-select
                         v-model="editedItem.job"
                         filled
@@ -158,14 +175,6 @@
                         label="Civil Status"
                         >
                         </v-select>
-
-                        <v-text-field
-                        v-model="editedItem.birthplace"
-                        filled
-                        rounded
-                        label="birthplace"
-                        >
-                        </v-text-field>
 
                       </v-container>
                     </v-card-text>
@@ -291,6 +300,7 @@
         { text: 'civil status', value: 'attributes.civil_status' },
         { text: 'residence', value: 'attributes.resident' },
         { text: 'birthplace', value: 'attributes.birthplace' },
+        { text: 'birthday', value: 'attributes.birthday' },
         { text: 'Voter', value: 'attributes.voter' },
         { text: 'Status', value: 'attributes.mortality' }, 
         { text: 'Actions', value: 'actions', sortable: false },
@@ -309,6 +319,7 @@
         civil_status:'',
         residence:'',
         birthplace:'',
+        birthday: '',
         voter: '',
         mortality: ''
       },
@@ -323,6 +334,7 @@
         civil_status:'',
         residence:'',
         birthplace:'',
+        birthday: '',
         voter: '',
         mortality: ''
       },
@@ -333,9 +345,6 @@
       formTitle () {
         return this.editedIndex === -1 ? 'New Data' : 'Edit Data'
       },
-
-      
-      
 
     },
 
@@ -416,6 +425,7 @@
           voter: this.editedItem.voter,
           mortality: this.editedItem.mortality,
           birthplace: this.editedItem.birthplace,
+          birthday: this.editedItem.birthday,
           civil_status: this.editedItem.civil_status,
           resident : this.editedItem.residence,
           responsible: Moralis.User.current()
@@ -460,8 +470,8 @@
           job: this.editedItem.job,
           voter: this.editedItem.voter,
           mortality: this.editedItem.mortality,
-          
           birthplace: this.editedItem.birthplace,
+          birthday: this.editedItem.birthday,
           civil_status: this.editedItem.civil_status,
           resident : this.editedItem.residence,
           responsible: Moralis.User.current()
@@ -494,6 +504,7 @@ n
             text : "Successfuly deleted",
             color : 'primary'
         });
+        
       },
 
        

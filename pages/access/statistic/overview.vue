@@ -121,11 +121,12 @@
               
                 <v-card-title>
                   <v-icon dark class="mr-2">mdi-human-male</v-icon>
-                  Gender
+                  Sex Ratio
                 </v-card-title>
-                <v-card-subtitle v-if="initload">
-                  Total Male: {{genderCount[0].length}}
-                </v-card-subtitle>
+                <v-card-text v-if="initload">
+                  Total Male: {{genderCount[0].length}} <br>
+                  Total Female: {{genderCount[1].length}}
+                </v-card-text>
             </v-card>
           </v-hover>
 
@@ -214,6 +215,45 @@
           
         </v-col>
 
+        <v-col
+          cols="12"
+          md="4"
+        >
+          <v-hover v-slot="{ hover }">
+            <v-card
+              v-if="zone.length != 0"
+              :elevation="hover ? 12 : 1"
+              :class="{ 'on-hover': hover }"
+              dark
+              color="brown"
+              :loading="!initload"
+              @click="setZone()"
+            >
+              
+                <v-card-title>
+                  <v-icon dark class="mr-2">mdi-home</v-icon>
+                  Resident with in the Zone
+                </v-card-title>
+                <v-card-subtitle v-if="initload">
+                  Zone 1 residents : {{zoneCount[0].length}} <br>
+                  Zone 2 residents : {{zoneCount[1].length}}  <br>
+                  Zone 3 residents : {{zoneCount[2].length}} <br>
+                  Zone 4 residents : {{zoneCount[3].length}} <br>
+                  Zone 5 residents : {{zoneCount[4].length}} <br>
+                  Zone 6 residents : {{zoneCount[5].length}} <br>
+                  Zone 7 residents : {{zoneCount[6].length}} <br>
+                  Zone 8 residents : {{zoneCount[7].length}} <br>
+                  Zone 9 residents : {{zoneCount[8].length}} <br>
+                  Zone 10 residents : {{zoneCount[9].length}} <br>
+                  Zone 11 residents : {{zoneCount[10].length}} <br>
+                  Zone 12 residents : {{zoneCount[11].length}} <br>
+                  Zone 13 residents : {{zoneCount[12].length}} <br>
+                </v-card-subtitle>
+            </v-card>
+          </v-hover>
+          
+        </v-col>
+
 
     </v-row>
 
@@ -291,6 +331,15 @@
                   v-if="loadchart == 'Age'"
                 >
                   <AgeChart 
+                    :samplerecord="samplerecord" :samplelabel="samplelabel"
+                  />
+                </v-card-text>
+
+                <v-card-text
+                  class="mt-10"
+                  v-if="loadchart == 'Zone'"
+                >
+                  <ZoneChart 
                     :samplerecord="samplerecord" :samplelabel="samplelabel"
                   />
                 </v-card-text>
@@ -517,6 +566,300 @@
 
             </v-card-text>
 
+            <v-card-text v-if="loadchart == 'Zone'">
+
+                <v-subheader>Zone 1</v-subheader>
+
+                  <v-virtual-scroll
+                    bench="0"
+                    :items="zoneCount[0]"
+                    height="150"
+                    item-height="64"
+                  >
+                    <template v-slot:default="{ item }">
+                      <v-list-item
+                      :key="item"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>{{item.get('resident').get('firstname')}} {{item.get('resident').get('middlename')}} {{item.get('resident').get('lastname')}}</v-list-item-title>
+                          <v-list-item-subtitle>{{item.get('vaccine')}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-virtual-scroll>
+
+                <v-divider></v-divider>
+
+                 <v-subheader>Zone 2</v-subheader>
+
+                  <v-virtual-scroll
+                    bench="0"
+                    :items="zoneCount[1]"
+                    height="150"
+                    item-height="64"
+                  >
+                    <template v-slot:default="{ item }">
+                      <v-list-item
+                      :key="item"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>{{item.get('resident').get('firstname')}} {{item.get('resident').get('middlename')}} {{item.get('resident').get('lastname')}}</v-list-item-title>
+                          <v-list-item-subtitle>{{item.get('vaccine')}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-virtual-scroll>
+
+                <v-divider></v-divider>
+
+                 <v-subheader>Zone 3</v-subheader>
+
+                  <v-virtual-scroll
+                    bench="0"
+                    :items="zoneCount[2]"
+                    height="150"
+                    item-height="64"
+                  >
+                    <template v-slot:default="{ item }">
+                      <v-list-item
+                      :key="item"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>{{item.get('resident').get('firstname')}} {{item.get('resident').get('middlename')}} {{item.get('resident').get('lastname')}}</v-list-item-title>
+                          <v-list-item-subtitle>{{item.get('vaccine')}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-virtual-scroll>
+
+                <v-divider></v-divider>
+
+                 <v-subheader>Zone 4</v-subheader>
+
+                  <v-virtual-scroll
+                    bench="0"
+                    :items="zoneCount[3]"
+                    height="150"
+                    item-height="64"
+                  >
+                    <template v-slot:default="{ item }">
+                      <v-list-item
+                      :key="item"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>{{item.get('resident').get('firstname')}} {{item.get('resident').get('middlename')}} {{item.get('resident').get('lastname')}}</v-list-item-title>
+                          <v-list-item-subtitle>{{item.get('vaccine')}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-virtual-scroll>
+
+                <v-divider></v-divider>
+
+                 <v-subheader>Zone 5</v-subheader>
+
+                  <v-virtual-scroll
+                    bench="0"
+                    :items="zoneCount[4]"
+                    height="150"
+                    item-height="64"
+                  >
+                    <template v-slot:default="{ item }">
+                      <v-list-item
+                      :key="item"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>{{item.get('resident').get('firstname')}} {{item.get('resident').get('middlename')}} {{item.get('resident').get('lastname')}}</v-list-item-title>
+                          <v-list-item-subtitle>{{item.get('vaccine')}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-virtual-scroll>
+
+                <v-divider></v-divider>
+
+                 <v-subheader>Zone 6</v-subheader>
+
+                  <v-virtual-scroll
+                    bench="0"
+                    :items="zoneCount[5]"
+                    height="150"
+                    item-height="64"
+                  >
+                    <template v-slot:default="{ item }">
+                      <v-list-item
+                      :key="item"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>{{item.get('resident').get('firstname')}} {{item.get('resident').get('middlename')}} {{item.get('resident').get('lastname')}}</v-list-item-title>
+                          <v-list-item-subtitle>{{item.get('vaccine')}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-virtual-scroll>
+
+                <v-divider></v-divider>
+
+                 <v-subheader>Zone 7</v-subheader>
+
+                  <v-virtual-scroll
+                    bench="0"
+                    :items="zoneCount[6]"
+                    height="150"
+                    item-height="64"
+                  >
+                    <template v-slot:default="{ item }">
+                      <v-list-item
+                      :key="item"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>{{item.get('resident').get('firstname')}} {{item.get('resident').get('middlename')}} {{item.get('resident').get('lastname')}}</v-list-item-title>
+                          <v-list-item-subtitle>{{item.get('vaccine')}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-virtual-scroll>
+
+                <v-divider></v-divider>
+
+                 <v-subheader>Zone 8</v-subheader>
+
+                  <v-virtual-scroll
+                    bench="0"
+                    :items="zoneCount[7]"
+                    height="150"
+                    item-height="64"
+                  >
+                    <template v-slot:default="{ item }">
+                      <v-list-item
+                      :key="item"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>{{item.get('resident').get('firstname')}} {{item.get('resident').get('middlename')}} {{item.get('resident').get('lastname')}}</v-list-item-title>
+                          <v-list-item-subtitle>{{item.get('vaccine')}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-virtual-scroll>
+
+                <v-divider></v-divider>
+
+                 <v-subheader>Zone 9</v-subheader>
+
+                  <v-virtual-scroll
+                    bench="0"
+                    :items="zoneCount[8]"
+                    height="150"
+                    item-height="64"
+                  >
+                    <template v-slot:default="{ item }">
+                      <v-list-item
+                      :key="item"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>{{item.get('resident').get('firstname')}} {{item.get('resident').get('middlename')}} {{item.get('resident').get('lastname')}}</v-list-item-title>
+                          <v-list-item-subtitle>{{item.get('vaccine')}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-virtual-scroll>
+
+                <v-divider></v-divider>
+
+                 <v-subheader>Zone 10</v-subheader>
+
+                  <v-virtual-scroll
+                    bench="0"
+                    :items="zoneCount[9]"
+                    height="150"
+                    item-height="64"
+                  >
+                    <template v-slot:default="{ item }">
+                      <v-list-item
+                      :key="item"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>{{item.get('resident').get('firstname')}} {{item.get('resident').get('middlename')}} {{item.get('resident').get('lastname')}}</v-list-item-title>
+                          <v-list-item-subtitle>{{item.get('vaccine')}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-virtual-scroll>
+
+                <v-divider></v-divider>
+
+                 <v-subheader>Zone 11</v-subheader>
+
+                  <v-virtual-scroll
+                    bench="0"
+                    :items="zoneCount[10]"
+                    height="150"
+                    item-height="64"
+                  >
+                    <template v-slot:default="{ item }">
+                      <v-list-item
+                      :key="item"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>{{item.get('resident').get('firstname')}} {{item.get('resident').get('middlename')}} {{item.get('resident').get('lastname')}}</v-list-item-title>
+                          <v-list-item-subtitle>{{item.get('vaccine')}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-virtual-scroll>
+
+                <v-divider></v-divider>
+
+                 <v-subheader>Zone 12</v-subheader>
+
+                  <v-virtual-scroll
+                    bench="0"
+                    :items="zoneCount[11]"
+                    height="150"
+                    item-height="64"
+                  >
+                    <template v-slot:default="{ item }">
+                      <v-list-item
+                      :key="item"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>{{item.get('resident').get('firstname')}} {{item.get('resident').get('middlename')}} {{item.get('resident').get('lastname')}}</v-list-item-title>
+                          <v-list-item-subtitle>{{item.get('vaccine')}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-virtual-scroll>
+
+                <v-divider></v-divider>
+
+                 <v-subheader>Zone 13</v-subheader>
+
+                  <v-virtual-scroll
+                    bench="0"
+                    :items="zoneCount[12]"
+                    height="150"
+                    item-height="64"
+                  >
+                    <template v-slot:default="{ item }">
+                      <v-list-item
+                      :key="item"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>{{item.get('resident').get('firstname')}} {{item.get('resident').get('middlename')}} {{item.get('resident').get('lastname')}}</v-list-item-title>
+                          <v-list-item-subtitle>{{item.get('vaccine')}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-virtual-scroll>
+
+                <v-divider></v-divider>
+
+
+
+
+
+            </v-card-text>
+
             <v-card-text v-if="loadchart == 'Age'">
                 <v-subheader>Child Residents</v-subheader>
                 <v-virtual-scroll
@@ -539,7 +882,7 @@
 
                 <v-divider></v-divider>
 
-                <v-subheader>adolescent residents</v-subheader>
+                <v-subheader>Adolescent residents</v-subheader>
                 <v-virtual-scroll
                   bench="0"
                   :items="record[1]"
@@ -560,7 +903,7 @@
 
                 <v-divider></v-divider>
 
-                <v-subheader>adult residents</v-subheader>
+                <v-subheader>Adult residents</v-subheader>
                 <v-virtual-scroll
                   bench="0"
                   :items="record[2]"
@@ -717,6 +1060,7 @@
 <script>
 import MaleChart from '~/components/MaleChart.vue';
 import AgeChart from '~/components/AgeChart.vue';
+import ZoneChart from '~/components/ZoneChart.vue';
 import FemaleChart from '~/components/FemaleChart.vue';
 import VoterChart from '~/components/VoterChart.vue';
 import JobChart from '~/components/JobChart.vue';
@@ -733,6 +1077,7 @@ import Moralis from 'moralis';
         FemaleChart,
         MaleChart,
         AgeChart,
+        ZoneChart,
         ResidentList,
         MortalityChart,
         VaccinationChart
@@ -742,6 +1087,7 @@ import Moralis from 'moralis';
       resident:[],
       outofyouth:[],
       vaccine:[],
+      zone: [],
 
 
       voterCount: [],
@@ -750,6 +1096,7 @@ import Moralis from 'moralis';
       ageCount:[],
       mortalityCount:[],
       vaccinationCount:[],
+      zoneCount:[],
 
       samplerecord: [],
       samplelabel: [],
@@ -811,7 +1158,7 @@ import Moralis from 'moralis';
       setVaccinationCount : function(){
         this.record = []
         this.loadchart = "Vaccination"
-        console.log(" loadchart == vaccination ")
+        
         this.samplerecord = [ 
           this.vaccinationCount[0].length ,
           this.vaccinationCount[1].length ,
@@ -824,6 +1171,7 @@ import Moralis from 'moralis';
         this.record.push(this.vaccinationCount[1])
         this.record.push(this.vaccinationCount[2])
         this.record.push(this.vaccinationCount[3])
+
 
       },
 
@@ -851,6 +1199,41 @@ import Moralis from 'moralis';
         return result
       },
 
+      loadZoneCount : function (obj){
+        let result     = [];
+        let zone1      = obj.filter(item => item.attributes.zone == "Zone 1");
+        let zone2      = obj.filter(item => item.attributes.zone == "Zone 2");
+        let zone3      = obj.filter(item => item.attributes.zone == "Zone 3");
+        let zone4      = obj.filter(item => item.attributes.zone == "Zone 4");
+        let zone5      = obj.filter(item => item.attributes.zone == "Zone 5");
+        let zone6      = obj.filter(item => item.attributes.zone == "Zone 6");
+        let zone7      = obj.filter(item => item.attributes.zone == "Zone 7");
+        let zone8      = obj.filter(item => item.attributes.zone == "Zone 8");
+        let zone9      = obj.filter(item => item.attributes.zone == "Zone 9");
+        let zone10      = obj.filter(item => item.attributes.zone == "Zone 10");
+        let zone11     = obj.filter(item => item.attributes.zone == "Zone 11");
+        let zone12      = obj.filter(item => item.attributes.zone == "Zone 12");
+        let zone13     = obj.filter(item => item.attributes.zone == "Zone 13");
+
+        result[0] = zone1;
+        result[1] = zone2;
+        result[2] = zone3;
+        result[3] = zone4;
+        result[4] = zone5;
+        result[5] = zone6;
+        result[6] = zone7;
+        result[7] = zone8;
+        result[8] = zone9;
+        result[9] = zone10;
+        result[10] = zone11;
+        result[11] = zone12;
+        result[12] = zone13;
+
+        return result;
+        
+
+      },
+
       setAge : function(){
         this.record = []
         this.loadchart = "Age"
@@ -862,11 +1245,61 @@ import Moralis from 'moralis';
           ]
 
         this.samplelabel = ["Child","Adolescent","Adult","Senior"]
-        this.record.push(this.ageCount[0])
-        this.record.push(this.ageCount[1])
-        this.record.push(this.ageCount[2])
-        this.record.push(this.ageCount[3])
+        this.record.push(this.ageCount[0]);
+        this.record.push(this.ageCount[1]);
+        this.record.push(this.ageCount[2]);
+        this.record.push(this.ageCount[3]);
 
+      },
+
+      setZone : function (){
+        this.record = []
+        this.loadchart = "Zone";
+        this.samplerecord = [ 
+          this.zoneCount[0].length ,
+          this.zoneCount[1].length , 
+          this.zoneCount[2].length , 
+          this.zoneCount[3].length , 
+          this.zoneCount[4].length , 
+          this.zoneCount[5].length , 
+          this.zoneCount[6].length , 
+          this.zoneCount[7].length , 
+          this.zoneCount[8].length , 
+          this.zoneCount[9].length , 
+          this.zoneCount[10].length , 
+          this.zoneCount[11].length , 
+          this.zoneCount[12].length , 
+          ]
+
+        this.samplelabel = [
+          "Zone 1",
+          "Zone 2",
+          "Zone 3",
+          "Zone 4",
+          "Zone 5",
+          "Zone 6",
+          "Zone 7",
+          "Zone 8",
+          "Zone 9",
+          "Zone 10",
+          "Zone 11",
+          "Zone 12",
+          "Zone 13",
+        ];
+        this.record.push(this.zoneCount[0]);
+        this.record.push(this.zoneCount[1]);
+        this.record.push(this.zoneCount[2]);
+        this.record.push(this.zoneCount[3]);
+        this.record.push(this.zoneCount[4]);
+        this.record.push(this.zoneCount[5]);
+        this.record.push(this.zoneCount[6]);
+        this.record.push(this.zoneCount[7]);
+        this.record.push(this.zoneCount[8]);
+        this.record.push(this.zoneCount[9]);
+        this.record.push(this.zoneCount[10]);
+        this.record.push(this.zoneCount[11]);
+        this.record.push(this.zoneCount[12]);
+        
       },
 
       setJob : function (){
@@ -930,6 +1363,13 @@ import Moralis from 'moralis';
         this.genderCount = this.loadGenderCount(this.resident);
       },
 
+      async loadResident (){
+        const Resident = Moralis.Object.extend("Resident");
+        const query = new Moralis.Query(Resident);
+        const results = await query.find();
+        this.users =  results.reverse();
+      },
+
       setOutofschool : function (){
         this.record = []
         this.loadchart = "Outofschool"
@@ -952,9 +1392,15 @@ import Moralis from 'moralis';
         const results = await query.find();
         this.vaccine =  results
 
-        console.log(results)
-        console.table(results)
         this.vaccinationCount = this.loadVaccinationCount(this.vaccine);
+      },
+
+      async loadZone (){
+        const Zone = Moralis.Object.extend("Zone");
+        const query = new Moralis.Query(Zone);
+        const results = await query.find();
+        this.zone = results;
+        this.zoneCount = this.loadZoneCount(this.zone);
       },
 
     },
@@ -963,6 +1409,7 @@ import Moralis from 'moralis';
       this.initResident();
       this.initOutOfSchoolYouth();
       this.initVaccine();
+      this.loadZone();
       
     }
   }

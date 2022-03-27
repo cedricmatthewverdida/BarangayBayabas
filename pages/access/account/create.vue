@@ -1,4 +1,8 @@
 <template>
+  <div>
+  <v-overlay :value="user.get('role') != 'Admin' ? true : false">
+    You dont have access
+  </v-overlay>
   <v-stepper
     v-model="e6"
     vertical
@@ -231,11 +235,13 @@
       </v-btn>
     </v-stepper-content>
   </v-stepper>
+  </div>
 </template>
 
 
 <script>
-  import Moralis from 'moralis'
+  import Moralis from 'moralis';
+  import { mapState } from 'vuex';
   export default {
     data () {
       return {
@@ -313,6 +319,9 @@
     },
 
     computed:{
+
+      ...mapState(['user']),
+
       personalInfo : function (){
         return this.account.profilepic == '' || this.account.firstname == '' || this.account.middlename == '' || this.account.lastname == '' ? true : false;
       },
@@ -327,11 +336,11 @@
 
       roleInfo : function (){
         return this.account.role == '' ? true : false;
-      },
+      }
       
+    },
 
-      
-    }
+  
   }
 </script>
 

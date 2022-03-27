@@ -71,7 +71,7 @@
                         filled
                         rounded
                         :items="users"
-                        label="Blotter"
+                        label="Lupon"
                         item-value="id"
                         item-text="name"
                         :disabled="editedIndex != -1"
@@ -95,6 +95,14 @@
                           label="Detail"
                         />
 
+                        <v-text-field
+                          v-model="editedItem.status"
+                          filled
+                          rounded
+                          label="Status"
+                        />
+
+
                       </v-container>
                     </v-card-text>
 
@@ -105,7 +113,7 @@
                         text
                         @click="close"
                       >
-                        Cancela
+                        Cancel
                       </v-btn>
                       <v-btn
                         color="blue darken-1"
@@ -186,7 +194,6 @@
 
       headers: [
         { text: 'id',          value: 'id' },
-        { text: 'complain',    value: 'attributes.complain' },
         { text: 'complainant', value: 'attributes.complainant.attributes.lastname' },
         { text: 'date',        value: 'createdAt' },
         { text: 'status',      value: 'attributes.status' },
@@ -199,12 +206,12 @@
 
       editedItem: {
         complainant: '',
-        detail: '',
+        status: ''
       },
 
       defaultItem: {
         complainant: '',
-        detail: '',
+        status: ''
       },
 
     }),
@@ -247,15 +254,13 @@
 
         let resident = this.users.find(o => o.id === this.editedItem.complainant)
         let status = this.editedItem.status
-        let detail = this.editedItem.detail
-        let respondent = Moralis.User.current()
+        let respondent = Moralis.User.current();
 
-        const Blotter = Moralis.Object.extend("Lupon");
-        const blotter = new Blotter();
+        const Lupon = Moralis.Object.extend("Lupon");
+        const lupon = new Lupon();
 
-          await blotter.save({
+          await lupon.save({
               complainant: resident,
-              details: detail,
               respondent: respondent,
               status: status
             })
@@ -263,7 +268,7 @@
 
               const Notification = Moralis.Object.extend("Notification");
               const notification = new Notification();
-              notification.set("content", "Added a Blotter data");
+              notification.set("content", "Added a Lupon data");
               notification.set("notifiedby", Moralis.User.current())
               notification.save();
 
@@ -332,12 +337,12 @@
 
       async updateData (){
 
-        let detail = this.editedItem.detail
+        let stats = this.editedItem.status
         let respondent = Moralis.User.current()
 
         const ActiveObj = this.activeObj;
         await ActiveObj.save({
-            details: detail,
+            status: stats,
             respondent: respondent,
         })
         .then((success) => {

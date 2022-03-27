@@ -96,8 +96,10 @@
 
                 try {
                     const user = await Moralis.User.logIn(this.username, this.password, { usePost: true });
-                    this.setUser(user);
-                    
+                 
+
+                    this.$store.commit('authorize_loggin', user)
+
                     this.$store.dispatch('snackbar/setSnackbar', {
                         text :  "Login Success",
                         color : 'success',
@@ -105,6 +107,9 @@
                     });
 
                     this.$router.push('/access/statistic/overview')
+                    // this.role(this.user.get('role'));
+
+                    
                 } catch (error) {
                     
                     console.log(error.message)
@@ -119,9 +124,15 @@
                 
             },
 
-            setUser (token){
-                this.$store.commit('authorize_loggin', token)
-            },
+            role : function (role){
+
+                switch(role){
+                    case "Admin" || "Staff":
+                        this.$router.push('/access/statistic/overview')
+                        break;
+                }
+                
+            }
         },
 
         mounted(){

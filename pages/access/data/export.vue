@@ -1,5 +1,8 @@
 <template>
     <div>
+        <v-overlay :value="user.get('role') != 'Admin' && user.get('role') != 'Staff'  ? true : false">
+            You dont have access
+        </v-overlay>
         <v-card
         :loading="initquery"
         >
@@ -57,6 +60,7 @@
 
     import { WidthType, BorderStyle, Document, Paragraph, Packer, TextRun } from "docx";
     import { saveAs } from 'file-saver';
+    import { mapState } from 'vuex'
     export default {
         components: {
             Document, Paragraph, Packer, TextRun, saveAs, BorderStyle, WidthType
@@ -86,6 +90,10 @@
             selectedtable : function (){
                 this.initTable();
             }
+        },
+
+        computed:{
+            ...mapState(['user'])
         },
 
         methods: {
