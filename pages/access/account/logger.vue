@@ -192,7 +192,6 @@
         { text: 'FirstName', value: 'attributes.user.attributes.firstname' },
         { text: 'MiddleName', value: 'attributes.user.attributes.middlename' },
         { text: 'LastName', value: 'attributes.user.attributes.lastname' },
-        { text: 'Username', value: 'attributes.user.attributes.username' },
         { text: 'Email', value: 'attributes.user.attributes.email' },
       ],
       resident: [],
