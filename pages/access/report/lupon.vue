@@ -193,7 +193,7 @@
 
 
       headers: [
-        { text: 'id',          value: 'id' },
+        { text: 'ID',          value: 'id' },
         { text: 'complainant', value: 'attributes.complainant.attributes.lastname' },
         { text: 'date',        value: 'createdAt' },
         { text: 'status',      value: 'attributes.status' },

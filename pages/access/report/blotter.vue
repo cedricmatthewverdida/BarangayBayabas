@@ -174,6 +174,8 @@
 
 
       headers: [
+        { text: 'ID',          value: 'id' },
+        { text: 'FirstName', value: 'attributes.complainant.attributes.firstname' },
         { text: 'FirstName', value: 'attributes.complainant.attributes.firstname' },
         { text: 'MiddleName', value: 'attributes.complainant.attributes.middlename' },
         { text: 'LastName', value: 'attributes.complainant.attributes.lastname' },

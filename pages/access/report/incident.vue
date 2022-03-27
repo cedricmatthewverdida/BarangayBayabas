@@ -216,7 +216,7 @@
 
 
       headers: [
-       
+        { text: 'ID',          value: 'id' },
         { text: 'Incident Detail', value: 'attributes.detail' },
         { text: 'Date', value: 'createdAt' },
         { text: 'Actions', value: 'actions', sortable: false },
