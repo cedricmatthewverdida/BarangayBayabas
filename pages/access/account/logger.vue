@@ -194,8 +194,6 @@
         { text: 'LastName', value: 'attributes.user.attributes.lastname' },
         { text: 'Username', value: 'attributes.user.attributes.username' },
         { text: 'Email', value: 'attributes.user.attributes.email' },
-        { text: 'Role', value: 'attributes.user.attributes.role' },
-        { text: 'Role', value: 'attributes.user.attributes.updatedAt' },
       ],
       resident: [],
       editedIndex: -1,
