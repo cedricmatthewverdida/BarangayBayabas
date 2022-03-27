@@ -117,15 +117,13 @@
                         </v-combobox>
 
                       
-                        <v-combobox
+                        <v-text-field
                         v-model="editedItem.detail"
                         filled
                         rounded
-                        :items="incident_list"
                         label="Incident Detail"
                         >
-
-                        </v-combobox>
+                        </v-text-field>
 
                       </v-container>
                     </v-card-text>
