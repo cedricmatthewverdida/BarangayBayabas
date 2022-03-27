@@ -253,7 +253,7 @@ export default {
                       link: '/access/statistic/vaccine'
                     },
                     { 
-                      title: 'Resident / in the zone',
+                      title: 'Resident with in the zone',
                       link: '/access/statistic/zone'
                     },
                 ],
