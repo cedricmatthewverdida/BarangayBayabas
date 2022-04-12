@@ -19,19 +19,33 @@
 
             <v-card-subtitle>
     
+                <div class="d-flex flex-row ">
                 <v-btn
                 style="text-transform:none;"
                 color="green"
                 class="mt-2 white--text"
                 depressed
                 rounded
-                large
+                x-large
                 :disabled="temp.length == 0"
                 @click="export_csv('exported.csv', temp)"
                 >
-                    <v-icon color="mr-2">mdi-export</v-icon>
+                    <v-icon color="mr-2">mdi-download</v-icon>
                     Export Excell / CSV
                 </v-btn>
+
+                <v-file-input
+                :disabled="temp.length == 0"
+                label="Import Excell / CSV"
+                @change="import_csv"
+                truncate-length="15"
+                class="upload mt-2"
+                filled
+                rounded
+                hide-details
+                ></v-file-input>
+                </div>
+
             </v-card-subtitle>
 
             <v-card-text>
@@ -61,6 +75,7 @@
     import { WidthType, BorderStyle, Document, Paragraph, Packer, TextRun } from "docx";
     import { saveAs } from 'file-saver';
     import { mapState } from 'vuex'
+    import Papa from 'papaparse';
     export default {
         components: {
             Document, Paragraph, Packer, TextRun, saveAs, BorderStyle, WidthType
@@ -82,7 +97,10 @@
                     'Summon',
                     'Blotter',
                     'Incident'
-                ]
+                ],
+
+                csvData: [],
+                convertedCSV: []
             }
         },
 
@@ -117,6 +135,127 @@
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
+            },
+
+            async setConverter (csv) {
+                switch(this.selectedtable){
+                    
+                    case 'Resident':
+                        
+                         for (const info of csv) {
+
+                            const Resident = Moralis.Object.extend("Resident");
+                            const resident = new Resident();
+
+                            await resident.save({
+                            firstname: info.Firstname,
+                            middlename: info.Middlename,
+                            lastname: info.Lastname,
+                            suffix: info.Suffix,
+                            age: Number(info.Age),
+                            sex: info.Sex,
+                            job: info.Job,
+                            voter: info.Voter,
+                            mortality: info.Mortality,
+                            birthplace: info.birthplace,
+                            birthday: info.birthday,
+                            civil_status: info.civil_status,
+                            responsible: Moralis.User.current()
+                            })
+                            .then((resident) => {
+                                this.$store.dispatch('snackbar/setSnackbar', {
+                                    text : "Successfuly created",
+                                    color : 'primary'
+                                });
+                            }, (error) => {
+
+                                this.$store.dispatch('snackbar/setSnackbar', {
+                                    text : error.message,
+                                    color : 'error'
+                                });
+                            });
+
+                        }
+
+
+                        break;
+
+                    case 'Vaccination':
+                        this.vaccineHeader();
+                        break;
+
+                    case 'HouseHold':
+                        
+                        // const HouseHold = Moralis.Object.extend("HouseHold");
+                        // const query = new Moralis.Query(HouseHold);
+                        // const household = new HouseHold();
+                        // query.equalTo("resident", resident);
+                        // const results = await query.find();
+                        // if(results.length == 0){
+                        // await household.save({
+                        //     resident: resident,
+                        //     address: house,
+                        //     responsible: Moralis.User.current()
+                        // })
+                        // .then((household) => {
+
+                        //     this.$store.dispatch('snackbar/setSnackbar', {
+                        //         text : "Successfuly created",
+                        //         color : 'primary'
+                        //     });
+
+                        //     return resident;
+
+                        // }, (error) => {
+
+                        //     this.$store.dispatch('snackbar/setSnackbar', {
+                        //     text : error.message,
+                        //     color : 'error'
+                        //     });
+
+                        // });
+                        // }else{
+                        // this.$store.dispatch('snackbar/setSnackbar', {
+                        //     text : "This resident has its designated address",
+                        //     color : 'error',
+                        //     icon: 'mdi-alert-circle-outline'
+                        // });
+                        // }
+                        break;
+
+                    case 'Outofschool':
+                        this.outofschoolHeader();
+                        break;
+
+                    case 'Zone':
+                        this.zoneHeader();
+                        break;
+
+                    case 'Summon':
+                        this.summonHeader();
+                        break;
+
+                    case 'Blotter':
+                        this.blotterHeader();
+                        break;
+
+                    case 'Incident':
+                        this.incidentHeader();
+                        break;
+                }
+            },
+
+            import_csv(file){
+                
+                if(file != null){
+                    const that = this
+                    Papa.parse(file, {
+                        header: true,
+                        complete: (results) => {
+                            that.setConverter(results.data)
+                        }
+                    });
+                }
             },
 
             initTable: _.debounce(async function(){
@@ -274,6 +413,9 @@
                     { text: 'Sex', value: 'attributes.sex' },
                     { text: 'Suffix', value: 'attributes.suffix' },
                     { text: 'Job', value: 'attributes.job' },
+                    { text: 'civilstatus', value: 'attributes.civil_status' },
+                    { text: 'birthday', value: 'attributes.birthday' },
+                    { text: 'birthplace', value: 'attributes.birthplace' },
                     { text: 'Voter', value: 'attributes.voter' },
                     { text: 'Mortality', value: 'attributes.mortality' }
                 ]
@@ -287,6 +429,9 @@
                         Sex: element.attributes.sex,
                         Suffix: element.attributes.suffix,
                         Job: element.attributes.job,
+                        civilstatus: element.attributes.job,
+                        birthday: element.attributes.birthday,
+                        birthplace: element.attributes.birthplace,
                         Voter: element.attributes.voter,
                         Mortality: element.attributes.mortality,
                     })
@@ -331,5 +476,7 @@
 </script>
 
 <style lang="scss" scoped>
-
+.upload {
+    max-width: 250px;
+}
 </style>
